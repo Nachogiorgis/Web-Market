@@ -1,10 +1,19 @@
 "use client";
 
-import { Plus, Search } from "lucide-react";
+import {
+  Compass,
+  Dice5,
+  Landmark,
+  Pencil,
+  Plus,
+  Search,
+  ShoppingBag,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FeedItemCard } from "./components/FeedItemCard";
-import { CompactSearchBar } from "./components/CompactSearchBar";
 import { BottomBar } from "./components/BottomBar";
 import { TopBar } from "./components/TopBar";
 
@@ -15,10 +24,10 @@ type FeedCategory =
   | "earning"
   | "banking"
   | "investing"
-  | "shopping"
   | "betting"
-  | "playing"
-  | "watching";
+  | "shopping";
+// | "playing"
+// | "watching";
 
 type FeedItemCategory = Exclude<FeedCategory, "explore">;
 
@@ -31,17 +40,31 @@ type FeedItem = {
 };
 
 const feedCategoryTabs: Array<{ key: FeedCategory; label: string }> = [
-  { key: "explore", label: "Explore" },
+  // { key: "explore", label: "Explore" },
   { key: "creating", label: "Creating" },
   { key: "learning", label: "Learning" },
   { key: "earning", label: "Earning" },
   { key: "banking", label: "Banking" },
   { key: "investing", label: "Investing" },
-  { key: "shopping", label: "Shopping" },
   { key: "betting", label: "Betting" },
-  { key: "playing", label: "Playing" },
-  { key: "watching", label: "Watching" },
+  { key: "shopping", label: "Shopping" },
+
+  // { key: "playing", label: "Playing" },
+  // { key: "watching", label: "Watching" },
 ];
+
+const feedCategoryIcons: Record<FeedCategory, JSX.Element> = {
+  explore: <Compass className="h-3.5 w-3.5" />,
+  creating: <Pencil className="h-3.5 w-3.5" />,
+  learning: <Landmark className="h-3.5 w-3.5" />,
+  earning: <Wallet className="h-3.5 w-3.5" />,
+  banking: <Wallet className="h-3.5 w-3.5" />,
+  investing: <TrendingUp className="h-3.5 w-3.5" />,
+  shopping: <ShoppingBag className="h-3.5 w-3.5" />,
+  betting: <Dice5 className="h-3.5 w-3.5" />,
+  // playing: <Gamepad2 className="h-3.5 w-3.5" />,
+  // watching: <Clapperboard className="h-3.5 w-3.5" />,
+};
 
 // Mock data for the feed (categorized)
 const feedItems: FeedItem[] = [
@@ -204,15 +227,15 @@ const feedItems: FeedItem[] = [
     title: "Indie Game Bundles",
     subtitle: "Top-rated games under $10",
     action: "Shop Deals",
-    category: "playing",
+    category: "shopping",
   },
-  {
-    id: 24,
-    title: "New Documentary Releases",
-    subtitle: "Critically acclaimed picks",
-    action: "Watch Now",
-    category: "watching",
-  },
+  // {
+  //   id: 24,
+  //   title: "New Documentary Releases",
+  //   subtitle: "Critically acclaimed picks",
+  //   action: "Watch Now",
+  //   category: "watching",
+  // },
 ];
 
 // Mock data for suggestions by category
@@ -250,6 +273,7 @@ export default function Home() {
   const router = useRouter();
   const sliderRef = useRef<HTMLDivElement>(null);
   const mainSearchRef = useRef<HTMLDivElement>(null);
+  const mainSearchInputRef = useRef<HTMLInputElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [showCompactSearch, setShowCompactSearch] = useState(false);
   const [isSuggestionsHovered, setIsSuggestionsHovered] = useState(false);
@@ -257,13 +281,16 @@ export default function Home() {
     "trending" | "suggested" | "popular"
   >("suggested");
   const [selectedFeedCategory, setSelectedFeedCategory] =
-    useState<FeedCategory>("explore");
+    useState<FeedCategory | null>(null);
   const [mainScrollOffset, setMainScrollOffset] = useState(0);
   const sliderInViewRef = useRef(false);
+  const mainSearchOutOfViewRef = useRef(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isFloatingSuggestionsOpen, setIsFloatingSuggestionsOpen] =
+    useState(false);
 
   const visibleFeedItems = useMemo(() => {
-    if (selectedFeedCategory === "explore") return feedItems;
+    if (!selectedFeedCategory) return feedItems;
     return feedItems.filter((item) => item.category === selectedFeedCategory);
   }, [selectedFeedCategory]);
 
@@ -271,24 +298,40 @@ export default function Home() {
     const sliderNode = sliderRef.current;
     const searchNode = mainSearchRef.current;
 
-    // 1) Compact search bar: appears only when the main search fully leaves view.
+    // 1) Compact search bar: appears only when the main search is
+    // completely out of the viewport (no overlap at all).
     // Also collapses the ad display only when user returns to the main search at the top
     // *and* the slider is no longer in view (to avoid fighting with the slider observer).
     const searchObserver = new IntersectionObserver(
       ([entry]) => {
-        const isIntersecting = entry.isIntersecting;
+        const intersectionRatio = entry.intersectionRatio ?? 0;
+        const isFullyOutOfView = intersectionRatio === 0;
+
         // Compact bar only when main search is fully out of view
-        setShowCompactSearch(!isIntersecting);
+        setShowCompactSearch(isFullyOutOfView);
+
+        // Manage focus of the main search input based on visibility transitions
+        if (isFullyOutOfView !== mainSearchOutOfViewRef.current) {
+          mainSearchOutOfViewRef.current = isFullyOutOfView;
+          const input = mainSearchInputRef.current;
+          if (input) {
+            if (isFullyOutOfView) {
+              input.blur();
+            } else {
+              input.focus();
+            }
+          }
+        }
 
         // Collapse ad display only when user scrolls back to main search
         // and the slider is not currently visible.
-        if (isIntersecting && !sliderInViewRef.current) {
+        if (!isFullyOutOfView && !sliderInViewRef.current) {
           setIsVisible(false);
         }
       },
       {
-        threshold: [0, 1],
-        rootMargin: "20px 0px",
+        threshold: [0],
+        rootMargin: "0px",
       }
     );
 
@@ -414,23 +457,164 @@ export default function Home() {
       {/* Top Bar */}
       <TopBar mode="home" showCenterCollapsed={showCompactSearch} />
 
-      {/* Compact Search Bar (appears when main search leaves view) */}
+      {/* Floating Main Search Bar (appears at bottom when main search leaves view) */}
       <div
-        className={`fixed left-1/2 top-[14px] z-[1001] w-[640px] -translate-x-1/2 transition-all duration-300 ease-out ${
+        className={`fixed inset-x-0 bottom-[75px] z-[999] flex justify-center transition-all duration-300 ease-out ${
           showCompactSearch
             ? "pointer-events-auto translate-y-0 opacity-100"
-            : "pointer-events-none -translate-y-4 opacity-0"
+            : "pointer-events-none translate-y-24 opacity-0"
         }`}
       >
-        <CompactSearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          onSubmit={() => goToSearch(searchQuery)}
-          suggestions={filteredSuggestions}
-          showNoResultsState
-          onSelectSuggestion={goToSearch}
-          onFeelingLucky={() => goToSearch(searchQuery || "I'm Feeling Lucky")}
-        />
+        <div className="relative flex w-full justify-center">
+          {/* Main Search Bar (floating variant) */}
+          <div className="relative z-20 inline-flex h-11 w-[55vw] max-w-[640px] items-center justify-between overflow-hidden rounded-[5px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.15)]">
+            <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl">
+              <Plus className="h-5 stroke-black/40" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              placeholder="Search..."
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchQuery(value);
+                setIsFloatingSuggestionsOpen(value.trim() !== "");
+              }}
+              className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-base font-normal text-black/100 outline-none placeholder:text-black/30 focus:outline-none"
+              style={{ boxShadow: "none" }}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  goToSearch(searchQuery);
+                  setIsFloatingSuggestionsOpen(false);
+                }
+              }}
+              onFocus={() => {
+                if (searchQuery.trim() !== "") {
+                  setIsFloatingSuggestionsOpen(true);
+                }
+              }}
+              onBlur={() => {
+                // Delay so click events on suggestions can fire
+                setTimeout(() => setIsFloatingSuggestionsOpen(false), 120);
+              }}
+            />
+            <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl">
+              <Search className="h-5 stroke-black/40" />
+            </div>
+          </div>
+
+          {/* Suggestions List – opens upward from floating search */}
+          <div
+            className={`absolute bottom-full left-1/2 -mb-1 inline-flex w-[95%] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-b-[0px] rounded-t-[10px] bg-black/[0.5%] pb-1 pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
+              isFloatingSuggestionsOpen
+                ? "max-h-[280px] min-h-[120px] pb-0 opacity-100 shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
+                : "max-h-[0px] pb-0 opacity-0"
+            }`}
+          >
+            {/* Suggestions List Tabs */}
+            <div className="flex items-center justify-center gap-0 self-stretch border-b-[0.50px] border-black/10 bg-black/0 p-0 backdrop-blur-[50px]">
+              <div
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => setSelectedTab("trending")}
+                className="group flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-[0px] py-1.5 hover:bg-black/[0%]"
+              >
+                <div
+                  className={`line-clamp-1 justify-start font-['Neue_Montreal'] text-xs font-normal transition-colors ${
+                    selectedTab === "trending"
+                      ? "text-black"
+                      : "text-black/40 group-hover:text-black/60"
+                  }`}
+                >
+                  Trending
+                </div>
+              </div>
+
+              <div className="h-4 w-0 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/5"></div>
+
+              <div
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => setSelectedTab("suggested")}
+                className="group flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-[0px] py-1.5 hover:bg-black/[0%]"
+              >
+                <div
+                  className={`line-clamp-1 justify-start font-['Neue_Montreal'] text-xs font-normal transition-colors ${
+                    selectedTab === "suggested"
+                      ? "text-black"
+                      : "text-black/40 group-hover:text-black/60"
+                  }`}
+                >
+                  Suggested
+                </div>
+              </div>
+
+              <div className="h-4 w-0 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/5"></div>
+
+              <div
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => setSelectedTab("popular")}
+                className="group flex flex-1 cursor-pointer items-center justify-center gap-2.5 rounded-[0px] py-1.5 hover:bg-black/[0%]"
+              >
+                <div
+                  className={`line-clamp-1 justify-start font-['Neue_Montreal'] text-xs font-normal transition-colors ${
+                    selectedTab === "popular"
+                      ? "text-black"
+                      : "text-black/40 group-hover:text-black/60"
+                  }`}
+                >
+                  Popular
+                </div>
+              </div>
+            </div>
+
+            {/* Suggestions List Items */}
+            <div
+              className={`no-scrollbar flex max-h-[230px] flex-col items-start justify-start self-stretch overflow-y-auto transition-all duration-300 ease-out ${
+                isFloatingSuggestionsOpen ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {filteredSuggestions.length > 0 ? (
+                filteredSuggestions.map((suggestion, index) => (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      goToSearch(suggestion);
+                      setIsFloatingSuggestionsOpen(false);
+                    }}
+                    className="flex cursor-pointer flex-col items-start justify-start gap-2 self-stretch border-t-[0.0px] bg-black/0 p-3.5 text-black/80 backdrop-blur-xl hover:bg-black/[1.5%]"
+                  >
+                    <div className="inline-flex items-center justify-start gap-2.5">
+                      <div className="h-7 w-7 rounded-lg bg-white" />
+                      <div className="inline-flex flex-col items-start justify-center">
+                        <div className="line-clamp-1 justify-start font-['Neue_Montreal'] text-sm font-normal">
+                          {suggestion}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-4 self-stretch py-10">
+                  <div className="text-center font-['Neue_Montreal'] text-xs font-normal text-black/40">
+                    No results found. Try a different search.
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goToSearch(searchQuery || "I'm Feeling Lucky")
+                    }
+                    className="inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md bg-black/[2.5%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[5%]"
+                  >
+                    <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/60">
+                      I&apos;m Feeling Lucky
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Bottom Bar */}
@@ -438,26 +622,63 @@ export default function Home() {
 
       {/* Main Container */}
       <div className="relative flex flex-col items-center justify-center gap-0">
-        {/* Search Container */}
-        <div className="inline-flex h-screen w-screen flex-col items-center justify-center gap-2.5 pb-[17.5vh]">
-          <div className="flex flex-col items-center justify-start gap-8">
-            {/* Logo */}
-            <div className="justify-start text-center font-['Neue_Montreal'] text-4xl font-normal text-black">
-              WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
+        {/* Display Slider Row */}
+        <div
+          ref={sliderRef}
+          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-8 bg-black/0 pb-[3.5%] pt-[6.5%]"
+          // Another option is without: sticky top-0 mb-[7.5vh]
+        >
+          {/* Ad Categories Items */}
+          <div className="flex max-w-[75%] justify-center transition-all duration-500 ease-out">
+            <div className="no-scrollbar flex w-auto items-center justify-between gap-5 overflow-x-auto border-t-[0.0px] px-0 py-0">
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
             </div>
+          </div>
+
+          {/* Ad Display */}
+          <div
+            className={`w-[75%] rounded-sm border-[0.50px] border-black/10 bg-white/10 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px] transition-all duration-500 ease-out ${
+              isVisible ? "h-[45vh]" : "h-[45vh]"
+            }`}
+          />
+
+          {/* Logo */}
+          <div className="absolute left-1/2 top-[28vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-4xl font-normal text-black">
+            WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
+          </div>
+        </div>
+
+        {/* Search Container */}
+        <div className="inline-flex h-screen w-screen flex-col items-center justify-center gap-2.5 pb-[10vh]">
+          <div className="z-20 flex flex-col items-center justify-start gap-8">
+            {/* Logo */}
+            {/* <div className="justify-start text-center font-['Neue_Montreal'] text-4xl font-normal text-black">
+              WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
+            </div> */}
 
             {/* Search Container */}
-            <div className="relative flex flex-col items-center justify-start">
+            <div className="relative z-30 flex flex-col items-center justify-start">
               {/* Main Search Bar */}
               <div
                 ref={mainSearchRef}
-                className="relative z-20 inline-flex h-11 w-[640px] items-center justify-between overflow-hidden rounded-[5px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.05)]"
+                className="relative z-20 inline-flex h-11 w-[55vw] max-w-[640px] items-center justify-between overflow-hidden rounded-[5px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.05)]"
               >
                 <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl">
                   <Plus className="h-5 stroke-black/40" />
                 </div>
                 <input
                   type="text"
+                  ref={mainSearchInputRef}
                   value={searchQuery}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -506,10 +727,10 @@ export default function Home() {
                     e.stopPropagation();
                   }
                 }}
-                className={`absolute left-1/2 top-full z-10 -mt-1 inline-flex w-[640px] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-bl-[10px] rounded-br-[10px] bg-black/[0.5%] pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
+                className={`absolute left-1/2 top-full z-10 -mt-1 inline-flex w-[95%] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-bl-[10px] rounded-br-[10px] bg-black/[0.5%] pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
                   isSuggestionsHovered && mainScrollOffset === 0
-                    ? "max-h-[280px] min-h-[280px] max-w-[620px] pb-0 shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
-                    : "max-h-[32px] max-w-[420px] pb-0"
+                    ? "max-h-[280px] min-h-[280px] pb-0 shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
+                    : "max-h-[32px] pb-0"
                 }`}
               >
                 {/* Suggestions List Tabs */}
@@ -616,7 +837,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => goToSearch(searchQuery || "I'm Feeling Lucky")}
-              className="mt-10 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md bg-black/[2.5%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[5%]"
+              className="z-20 mt-7 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[2.5%]"
             >
               <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/60">
                 I&apos;m Feeling Lucky
@@ -625,65 +846,30 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Feed Slider Row */}
-        <div
-          ref={sliderRef}
-          className="sticky top-0 -mt-72 mb-[7.5vh] flex min-h-[60vh] w-full flex-col items-center justify-end gap-8 bg-black/0 pb-[3.5%] pt-[6.5%]"
-          // Another option is without: sticky top-0 mb-[7.5vh]
-        >
-          {/* Ad Display */}
-          <div
-            className={`w-[55%] rounded-sm border-2 border-white bg-black/0 shadow-[0px_-4px_30px_0px_rgba(0,0,0,0.015)] backdrop-blur-[50px] transition-all duration-500 ease-out ${
-              isVisible ? "h-[45vh]" : "h-[40px]"
-            }`}
-          />
-
-          {/* Ad Categories Items */}
-          {/* <div className="w-[55%] flex justify-center transition-all duration-500 ease-out">
-            <div className="w-full px-0 py-0 border-t-[0.0px] flex justify-between items-center overflow-x-auto no-scrollbar">
-              <div className="w-20 h-11 bg-black/0 rounded-sm shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] border-2 border-white backdrop-blur-[50px]" />
-              <div className="w-20 h-11 bg-black/0 rounded-sm shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] border-2 border-white backdrop-blur-[50px]" />
-              <div className="w-20 h-11 bg-black/0 rounded-sm shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] border-2 border-white backdrop-blur-[50px]" />
-              <div className="w-20 h-11 bg-black/0 rounded-sm shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] border-2 border-white backdrop-blur-[50px]" />
-              <div className="w-20 h-11 bg-black/0 rounded-sm shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] border-2 border-white backdrop-blur-[50px]" />
-              <div className="w-20 h-11 bg-black/0 rounded-sm shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] border-2 border-white backdrop-blur-[50px]" />
-              <div className="w-20 h-11 bg-black/0 rounded-sm shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] border-2 border-white backdrop-blur-[50px]" />
-            </div>
-          </div> */}
-        </div>
-
         {/* For You Feed */}
-        <div className="relative z-10 flex w-full flex-col items-center justify-center border-t-[0.50px] border-black/15 bg-[#F6F6F6]">
-          {/* Ad Categories Items */}
-          <div className="absolute -top-[50px] left-1/2 flex max-w-[55%] -translate-x-1/2 justify-center transition-all duration-500 ease-out">
-            <div className="no-scrollbar flex w-auto items-center justify-between gap-5 overflow-x-auto border-t-[0.0px] px-0 py-0">
-              <div className="h-8 w-14 rounded-sm border-2 border-white bg-black/0 shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-2 border-white bg-black/0 shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-2 border-white bg-black/0 shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-2 border-white bg-black/0 shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-2 border-white bg-black/0 shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-2 border-white bg-black/0 shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-2 border-white bg-black/0 shadow-[0px_14px_20px_0px_rgba(0,0,0,0.025)] backdrop-blur-[50px]" />
-            </div>
-          </div>
-
+        <div className="relative z-10 -mt-[60vh] flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[47vh]">
           {/* Categories */}
-          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.50px] border-black/15 px-2.5 py-2.5">
-            <div className="inline-flex items-center justify-start gap-1">
+          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.50px] border-black/15 px-2.5 py-3.5">
+            <div className="inline-flex items-center justify-start gap-3.5">
               {feedCategoryTabs.map((tab) => {
                 const isSelected = selectedFeedCategory === tab.key;
                 return (
                   <div
                     key={tab.key}
-                    onClick={() => setSelectedFeedCategory(tab.key)}
-                    className={`flex h-auto w-20 cursor-pointer items-center justify-center gap-2.5 rounded-lg px-4 py-[6px] transition-colors ${
+                    onClick={() =>
+                      setSelectedFeedCategory(isSelected ? null : tab.key)
+                    }
+                    className={`flex h-auto w-24 cursor-pointer items-center justify-center gap-2.5 rounded-lg border-[0.5px] border-black/10 px-4 py-[6px] transition-colors ${
                       isSelected
-                        ? "text-black"
-                        : "text-black/30 hover:bg-black/[2%] hover:text-black/60"
+                        ? "bg-white/40 text-black"
+                        : "text-black/35 hover:bg-black/[2%] hover:text-black/60"
                     }`}
                   >
-                    <div className="justify-start text-right font-['Neue_Montreal'] text-xs font-normal">
-                      {tab.label}
+                    <div className="inline-flex items-center justify-center gap-2">
+                      {feedCategoryIcons[tab.key]}
+                      <div className="justify-start text-right font-['Neue_Montreal'] text-xs font-normal">
+                        {tab.label}
+                      </div>
                     </div>
                   </div>
                 );

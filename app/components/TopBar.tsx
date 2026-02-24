@@ -1,6 +1,5 @@
 "use client";
 
-import { Map, Rows3 } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -25,6 +24,9 @@ export function TopBar({
     "today" | "nearYou" | "forYou" | "explore" | "following"
   >("forYou");
 
+  const agentExpanded =
+    isAgentHovered || (mode === "home" && showCenterCollapsed);
+
   return (
     <div className="fixed left-0 right-0 top-0 z-[1000] inline-flex w-screen items-center justify-between p-3.5">
       <button
@@ -34,16 +36,11 @@ export function TopBar({
       />
 
       {mode === "home" ? (
-        <div
-          className={`flex items-center justify-center gap-3 overflow-hidden transition-all duration-300 ease-out ${
-            showCenterCollapsed
-              ? "pointer-events-none -translate-y-1 opacity-0"
-              : "translate-y-0 opacity-100"
-          }`}
-        >
-          <div className="flex h-7 w-7 items-center justify-center rounded-xl p-1 outline outline-[0.50px] outline-offset-[-0.50px] outline-black/15 backdrop-blur-none hover:bg-black/[1%]">
+        <div className="flex items-center justify-center gap-3 overflow-hidden transition-all duration-300 ease-out">
+          {/* Map */}
+          {/* <div className="flex h-7 w-7 items-center justify-center rounded-xl p-1 outline outline-[0.50px] outline-offset-[-0.50px] outline-black/15 backdrop-blur-none hover:bg-black/[1%]">
             <Map className="h-3.5 stroke-black/30" />
-          </div>
+          </div> */}
 
           {/* Agent – And current feed displayed: Today, Near You, For You, Explore, Following */}
           <div
@@ -51,7 +48,7 @@ export function TopBar({
             onMouseLeave={() => setIsAgentHovered(false)}
             className="relative flex h-7 items-center justify-center gap-0.5 overflow-hidden rounded-xl p-1 outline outline-[0.50px] outline-offset-[-0.50px] outline-black/15 transition-all duration-300 ease-out hover:bg-black/[1%]"
           >
-            {!isAgentHovered ? (
+            {!agentExpanded ? (
               <div className="flex h-5 w-14 items-center justify-center gap-1.5 rounded-md px-4 py-[3px]">
                 <div className="h-3.5 w-3.5 rounded-[100px] bg-white" />
               </div>
@@ -125,9 +122,10 @@ export function TopBar({
             )}
           </div>
 
-          <div className="flex h-7 w-7 items-center justify-center rounded-xl p-1 outline outline-[0.50px] outline-offset-[-0.50px] outline-black/15 backdrop-blur-none hover:bg-black/[1%]">
+          {/* Categories */}
+          {/* <div className="flex h-7 w-7 items-center justify-center rounded-xl p-1 outline outline-[0.50px] outline-offset-[-0.50px] outline-black/15 backdrop-blur-none hover:bg-black/[1%]">
             <Rows3 className="h-3.5 stroke-black/30" />
-          </div>
+          </div> */}
         </div>
       ) : (
         <div className="flex items-center justify-center gap-3 overflow-visible">

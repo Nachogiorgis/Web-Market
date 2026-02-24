@@ -1,5 +1,11 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
 
-npx lint-staged
+# Try to use node from PATH if available (normal case)
+if command -v node >/dev/null 2>&1; then
+  lint-staged
+  exit $?
+fi
+
+# Fallback: use Node installed via nvm for this user
+"/Users/nachogiorgis/.nvm/versions/node/v20.11.0/bin/node" node_modules/lint-staged/bin/lint-staged.js
 
