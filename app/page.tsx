@@ -484,7 +484,7 @@ export default function Home() {
                 setSearchQuery(value);
                 setIsFloatingSuggestionsOpen(value.trim() !== "");
               }}
-              className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-base font-normal text-black/100 outline-none placeholder:text-black/30 focus:outline-none"
+              className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-[15px] font-normal text-black/100 outline-none placeholder:text-black/30 focus:outline-none"
               style={{ boxShadow: "none" }}
               tabIndex={0}
               onKeyDown={(e) => {
@@ -511,7 +511,7 @@ export default function Home() {
 
           {/* Suggestions List – opens upward from floating search */}
           <div
-            className={`absolute bottom-full left-1/2 -mb-1 inline-flex w-[95%] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-b-[0px] rounded-t-[10px] bg-black/[0.5%] pb-1 pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
+            className={`absolute bottom-full left-1/2 -mb-1 inline-flex w-[95%] max-w-[620px] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-b-[0px] rounded-t-[10px] bg-black/[0.5%] pb-1 pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
               isFloatingSuggestionsOpen
                 ? "max-h-[280px] min-h-[120px] pb-0 opacity-100 shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
                 : "max-h-[0px] pb-0 opacity-0"
@@ -629,23 +629,23 @@ export default function Home() {
         {/* Display Slider Row */}
         <div
           ref={sliderRef}
-          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-8 bg-black/0 pb-[3.5%] pt-[6.5%]"
+          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-6 bg-black/0 pt-[90px]"
           // Another option is without: sticky top-0 mb-[7.5vh]
         >
           {/* Ad Categories Items */}
-          <div className="flex max-w-[75%] justify-center transition-all duration-500 ease-out">
-            <div className="no-scrollbar flex w-auto items-center justify-between gap-5 overflow-x-auto border-t-[0.0px] px-0 py-0">
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+          <div className="no-scrollbar flex w-full max-w-[70%] items-center justify-center overflow-x-auto overflow-y-hidden px-5">
+            <div className="no-scrollbar flex min-w-max items-center gap-5">
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
             </div>
           </div>
 
@@ -657,18 +657,15 @@ export default function Home() {
           />
 
           {/* Logo */}
-          <div className="absolute left-1/2 top-[28vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-4xl font-normal text-black">
+          <div className="absolute left-1/2 top-[28vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-[4vh] font-normal text-black">
             WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
           </div>
         </div>
 
-        {/* Search Container */}
-        {/* <div className="inline-flex h-screen w-screen flex-col items-center justify-center gap-2.5 pb-[10vh]">
-          
-        </div> */}
-
         {/* For You Feed */}
-        <div className="relative z-10 mt-[40vh] flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[47vh]">
+        {/* mt-[40vh] is to give space for the ad display */}
+        {/* pt-[60vh] is to push the feed out of the viewport, but keep the search container visible and above the ad display div */}
+        <div className="relative z-10 mt-[40vh] flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[60vh]">
           {/* Search Container */}
           <div className="absolute -top-6 z-20 flex flex-col items-center justify-start gap-8">
             <div className="relative z-30 flex flex-col items-center justify-start">
@@ -694,7 +691,7 @@ export default function Home() {
                     }
                   }}
                   autoFocus
-                  className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-base font-normal text-black/100 outline-none placeholder:text-black/30 focus:outline-none"
+                  className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-[15px] font-normal text-black/100 outline-none placeholder:text-black/30 focus:outline-none"
                   style={{ boxShadow: "none" }}
                   tabIndex={0}
                   onKeyDown={handleMainSearchKeyDown}
@@ -841,7 +838,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => goToSearch(searchQuery || "I'm Feeling Lucky")}
-              className="z-20 mt-7 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[2.5%]"
+              className="z-20 mt-10 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[2.5%]"
             >
               <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/60">
                 I&apos;m Feeling Lucky
@@ -850,7 +847,8 @@ export default function Home() {
           </div>
 
           {/* Categories */}
-          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.50px] border-black/15 px-2.5 py-3.5">
+          {/* -mt-[112px] is to compensate for the bottom bar height */}
+          <div className="-mt-[112px] inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.25px] border-black/5 px-2.5 py-3.5">
             <div className="inline-flex items-center justify-start gap-3.5">
               {feedCategoryTabs.map((tab) => {
                 const isSelected = selectedFeedCategory === tab.key;
@@ -878,17 +876,32 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Feed Items */}
-          <div className="feed-border-vertical inline-flex min-h-[85vh] w-[65%] flex-wrap content-start items-start justify-center gap-6 border-l-[0.50px] border-r-[0.50px] border-black/20 p-12 pb-36">
-            {visibleFeedItems.map((item) => (
-              <FeedItemCard
-                key={item.id}
-                title={item.title}
-                subtitle={item.subtitle}
-                action={item.action}
-                onClick={() => goToSearch(item.title)}
-              />
-            ))}
+          <div className="relative flex w-full flex-col items-center justify-start overflow-hidden">
+            {/* Feed Items */}
+            <div className="inline-flex min-h-[87.5vh] w-[65%] flex-wrap content-start items-start justify-center gap-[34px] px-0 pb-[35vh] pt-16">
+              {visibleFeedItems.map((item) => (
+                <FeedItemCard
+                  key={item.id}
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  action={item.action}
+                  onClick={() => goToSearch(item.title)}
+                />
+              ))}
+            </div>
+
+            {/* Background Grid */}
+            <div className="pointer-events-none absolute inset-0 -z-10 flex justify-center">
+              <div className="grid h-full w-full grid-cols-8">
+                {Array.from({ length: 200 }).map((_, index) => (
+                  <div
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={index}
+                    className="aspect-square border-[0.50px] border-black/[4%]"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

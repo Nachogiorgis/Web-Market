@@ -16,7 +16,7 @@ export function FeedItemCard({
   return (
     <div
       onClick={onClick}
-      className="group inline-flex w-full cursor-pointer flex-col items-start justify-start overflow-hidden outline outline-[0.50px] outline-black/15 hover:bg-black/[1.5%]"
+      className="group inline-flex w-full cursor-pointer flex-col items-start justify-start overflow-hidden rounded bg-white/30 shadow-[0px_4px_34px_-10px_rgba(0,0,0,0.035)] backdrop-blur-lg"
     >
       <div className="relative inline-flex items-center justify-start gap-4 self-stretch p-5">
         <div className="h-9 w-14 rounded-sm bg-white shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.05)]" />
