@@ -46,7 +46,7 @@ export function TopBar({
           <div
             onMouseEnter={() => setIsAgentHovered(true)}
             onMouseLeave={() => setIsAgentHovered(false)}
-            className="relative flex h-7 items-center justify-center gap-0.5 overflow-hidden rounded-xl p-1 outline outline-[0.50px] outline-offset-[-0.50px] outline-black/15 transition-all duration-300 ease-out hover:bg-black/[1%]"
+            className="relative flex h-7 items-center justify-center gap-0.5 overflow-hidden rounded-xl bg-white/[1%] p-1 outline outline-[0.50px] outline-offset-[-0.50px] outline-black/15 backdrop-blur-lg transition-all duration-300 ease-out"
           >
             {!agentExpanded ? (
               <div className="flex h-5 w-14 items-center justify-center gap-1.5 rounded-md px-4 py-[3px]">

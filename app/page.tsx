@@ -298,34 +298,38 @@ export default function Home() {
     const sliderNode = sliderRef.current;
     const searchNode = mainSearchRef.current;
 
-    // 1) Compact search bar: appears only when the main search is
-    // completely out of the viewport (no overlap at all).
-    // Also collapses the ad display only when user returns to the main search at the top
-    // *and* the slider is no longer in view (to avoid fighting with the slider observer).
+    // 1) Compact search / floating bar:
+    // Show ONLY after the user has scrolled PAST the main search bar
+    // (i.e. the bar is above the viewport), not merely when it's off-screen below.
     const searchObserver = new IntersectionObserver(
       ([entry]) => {
-        const intersectionRatio = entry.intersectionRatio ?? 0;
-        const isFullyOutOfView = intersectionRatio === 0;
+        const rect = entry.boundingClientRect;
+        const viewportHeight =
+          window.innerHeight || document.documentElement.clientHeight;
 
-        // Compact bar only when main search is fully out of view
-        setShowCompactSearch(isFullyOutOfView);
+        const isAboveViewport = rect.bottom <= 0;
+        const isBelowViewport = rect.top >= viewportHeight;
+        const isInViewport =
+          !isAboveViewport && !isBelowViewport && entry.isIntersecting;
 
-        // Manage focus of the main search input based on visibility transitions
-        if (isFullyOutOfView !== mainSearchOutOfViewRef.current) {
-          mainSearchOutOfViewRef.current = isFullyOutOfView;
-          const input = mainSearchInputRef.current;
-          if (input) {
-            if (isFullyOutOfView) {
-              input.blur();
-            } else {
-              input.focus();
-            }
-          }
+        // Floating search + expanded agent tab only when the main search
+        // has been scrolled past (above the viewport).
+        const shouldShowFloating = isAboveViewport;
+
+        setShowCompactSearch(shouldShowFloating);
+
+        // Manage focus: blur when scrolled past, refocus when scrolled back into view.
+        if (shouldShowFloating && !mainSearchOutOfViewRef.current) {
+          mainSearchOutOfViewRef.current = true;
+          mainSearchInputRef.current?.blur();
+        } else if (isInViewport && mainSearchOutOfViewRef.current) {
+          mainSearchOutOfViewRef.current = false;
+          mainSearchInputRef.current?.focus();
         }
 
-        // Collapse ad display only when user scrolls back to main search
+        // Collapse ad display only when user scrolls back up towards the main search
         // and the slider is not currently visible.
-        if (!isFullyOutOfView && !sliderInViewRef.current) {
+        if (!shouldShowFloating && !sliderInViewRef.current) {
           setIsVisible(false);
         }
       },
@@ -659,14 +663,14 @@ export default function Home() {
         </div>
 
         {/* Search Container */}
-        <div className="inline-flex h-screen w-screen flex-col items-center justify-center gap-2.5 pb-[10vh]">
-          <div className="z-20 flex flex-col items-center justify-start gap-8">
-            {/* Logo */}
-            {/* <div className="justify-start text-center font-['Neue_Montreal'] text-4xl font-normal text-black">
-              WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
-            </div> */}
+        {/* <div className="inline-flex h-screen w-screen flex-col items-center justify-center gap-2.5 pb-[10vh]">
+          
+        </div> */}
 
-            {/* Search Container */}
+        {/* For You Feed */}
+        <div className="relative z-10 mt-[40vh] flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[47vh]">
+          {/* Search Container */}
+          <div className="absolute -top-6 z-20 flex flex-col items-center justify-start gap-8">
             <div className="relative z-30 flex flex-col items-center justify-start">
               {/* Main Search Bar */}
               <div
@@ -844,10 +848,7 @@ export default function Home() {
               </div>
             </button>
           </div>
-        </div>
 
-        {/* For You Feed */}
-        <div className="relative z-10 -mt-[60vh] flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[47vh]">
           {/* Categories */}
           <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.50px] border-black/15 px-2.5 py-3.5">
             <div className="inline-flex items-center justify-start gap-3.5">
