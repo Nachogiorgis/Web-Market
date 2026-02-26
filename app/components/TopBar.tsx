@@ -32,8 +32,10 @@ export function TopBar({
       <button
         type="button"
         onClick={() => router.push("/")}
-        className="h-7 w-7 rounded-[10px] border-[0.50px] border-black/20 transition-colors hover:bg-black/[1%]"
-      />
+        className="flex h-7 w-7 items-center justify-center rounded-[10px] border-[0.50px] border-black/0 transition-colors hover:bg-black/[1%]"
+      >
+        {/* <Sparkle className="h-4 stroke-black/30" /> */}
+      </button>
 
       {mode === "home" ? (
         <div className="flex items-center justify-center gap-3 overflow-hidden transition-all duration-300 ease-out">
@@ -133,7 +135,12 @@ export function TopBar({
         </div>
       )}
 
-      <div className="h-7 w-7 rounded-[10px] border-[0.50px] border-black/20" />
+      <button
+        type="button"
+        className="flex h-7 w-7 items-center justify-center rounded-[10px] border-[0.50px] border-black/0 transition-colors hover:bg-black/[1%]"
+      >
+        {/* <TextAlignJustify className="h-4 stroke-black/30" /> */}
+      </button>
     </div>
   );
 }

@@ -66,6 +66,313 @@ const feedCategoryIcons: Record<FeedCategory, JSX.Element> = {
   // watching: <Clapperboard className="h-3.5 w-3.5" />,
 };
 
+type Space = {
+  name: string;
+  type: string;
+  description: string;
+  actions: string[];
+  widgets: Array<{
+    id: string;
+    title: string;
+    subtitle: string;
+    top: string;
+    left: string;
+  }>;
+};
+
+const spaces: Space[] = [
+  {
+    name: "AI Builders",
+    type: "Professional",
+    description: "AI tools, models, and talent.",
+    actions: ["Hire", "Invest", "Buy APIs"],
+    widgets: [
+      {
+        id: "ai-api",
+        title: "Model APIs",
+        subtitle: "GPT-style, vision & embeddings",
+        top: "22%",
+        left: "20%",
+      },
+      {
+        id: "ai-talent",
+        title: "ML Talent",
+        subtitle: "Fractional teams & contractors",
+        top: "30%",
+        left: "60%",
+      },
+      {
+        id: "ai-infra",
+        title: "Inference Infra",
+        subtitle: "Deploy and monitor workloads",
+        top: "52%",
+        left: "26%",
+      },
+      {
+        id: "ai-invest",
+        title: "Studio Deals",
+        subtitle: "Back high‑leverage builders",
+        top: "60%",
+        left: "64%",
+      },
+    ],
+  },
+  {
+    name: "Indie Hackers LATAM",
+    type: "Community",
+    description: "Bootstrapped & funded founders across LATAM.",
+    actions: ["Fundraise", "Recruit"],
+    widgets: [
+      {
+        id: "latam-feed",
+        title: "Founder Feed",
+        subtitle: "Early‑stage updates & wins",
+        top: "24%",
+        left: "24%",
+      },
+      {
+        id: "latam-hiring",
+        title: "Hiring Board",
+        subtitle: "Design, eng, growth roles",
+        top: "40%",
+        left: "62%",
+      },
+      {
+        id: "latam-capital",
+        title: "Capital Intros",
+        subtitle: "Angels & micro‑funds",
+        top: "56%",
+        left: "32%",
+      },
+      {
+        id: "latam-events",
+        title: "Meetups",
+        subtitle: "City‑based founder circles",
+        top: "64%",
+        left: "14%",
+      },
+    ],
+  },
+  {
+    name: "Remote Income",
+    type: "Financial",
+    description: "Freelance and online income streams.",
+    actions: ["Find gigs", "Tools"],
+    widgets: [
+      {
+        id: "remote-gigs",
+        title: "Curated Gigs",
+        subtitle: "Design, dev, ops, research",
+        top: "20%",
+        left: "30%",
+      },
+      {
+        id: "remote-marketplaces",
+        title: "Platforms",
+        subtitle: "Top places to apply this week",
+        top: "32%",
+        left: "64%",
+      },
+      {
+        id: "remote-stacks",
+        title: "Income Stacks",
+        subtitle: "Stackable side‑income playbooks",
+        top: "54%",
+        left: "18%",
+      },
+      {
+        id: "remote-tools",
+        title: "Back‑office",
+        subtitle: "Invoicing, tax, compliance",
+        top: "62%",
+        left: "48%",
+      },
+    ],
+  },
+  {
+    name: "Sports Alpha",
+    type: "Betting / Investing",
+    description: "Predictive markets and sports edges.",
+    actions: ["Bet", "Analyze", "Syndicate"],
+    widgets: [
+      {
+        id: "sports-models",
+        title: "Model Feeds",
+        subtitle: "Win‑probabilities & spreads",
+        top: "22%",
+        left: "18%",
+      },
+      {
+        id: "sports-markets",
+        title: "Live Markets",
+        subtitle: "On‑chain & book prices",
+        top: "38%",
+        left: "54%",
+      },
+      {
+        id: "sports-prop",
+        title: "Prop Builders",
+        subtitle: "Custom player and team props",
+        top: "52%",
+        left: "34%",
+      },
+      {
+        id: "sports-syndicate",
+        title: "Syndicates",
+        subtitle: "Pool capital & spread risk",
+        top: "64%",
+        left: "62%",
+      },
+    ],
+  },
+  {
+    name: "Digital Assets",
+    type: "Commerce",
+    description: "Templates, SaaS, code, and media.",
+    actions: ["Buy", "Sell", "License"],
+    widgets: [
+      {
+        id: "assets-market",
+        title: "Asset Market",
+        subtitle: "Starter kits & playbooks",
+        top: "24%",
+        left: "18%",
+      },
+      {
+        id: "assets-saas",
+        title: "Micro‑SaaS",
+        subtitle: "Tiny products with MRR",
+        top: "28%",
+        left: "58%",
+      },
+      {
+        id: "assets-licenses",
+        title: "Licensing Desk",
+        subtitle: "White‑label & OEM deals",
+        top: "50%",
+        left: "40%",
+      },
+      {
+        id: "assets-bundles",
+        title: "Creator Bundles",
+        subtitle: "Design, copy & dev packs",
+        top: "60%",
+        left: "14%",
+      },
+    ],
+  },
+  {
+    name: "Biohacking",
+    type: "Learning",
+    description: "Longevity, labs, and supplements.",
+    actions: ["Courses", "Products"],
+    widgets: [
+      {
+        id: "bio-courses",
+        title: "Protocols",
+        subtitle: "Sleep, focus, recovery",
+        top: "22%",
+        left: "26%",
+      },
+      {
+        id: "bio-labs",
+        title: "At‑home Labs",
+        subtitle: "Bloodwork & biomarkers",
+        top: "40%",
+        left: "60%",
+      },
+      {
+        id: "bio-stacks",
+        title: "Stacks",
+        subtitle: "Supplement & habit stacks",
+        top: "56%",
+        left: "18%",
+      },
+      {
+        id: "bio-market",
+        title: "Product Shelf",
+        subtitle: "Trusted brands & tools",
+        top: "62%",
+        left: "44%",
+      },
+    ],
+  },
+  {
+    name: "Climate Ventures",
+    type: "Investing",
+    description: "Green startups and climate tech.",
+    actions: ["Invest", "Grants"],
+    widgets: [
+      {
+        id: "climate-deals",
+        title: "Dealflow",
+        subtitle: "Seed to growth‑stage rounds",
+        top: "20%",
+        left: "22%",
+      },
+      {
+        id: "climate-grants",
+        title: "Grant Desk",
+        subtitle: "Non‑dilutive climate capital",
+        top: "36%",
+        left: "60%",
+      },
+      {
+        id: "climate-studios",
+        title: "Studios",
+        subtitle: "Co‑found with operators",
+        top: "52%",
+        left: "14%",
+      },
+      {
+        id: "climate-partners",
+        title: "Partners",
+        subtitle: "Corporate and NGO partners",
+        top: "64%",
+        left: "40%",
+      },
+    ],
+  },
+  {
+    name: "Startup Services",
+    type: "B2B",
+    description: "Legal, finance, and marketing providers.",
+    actions: ["Compare", "Book"],
+    widgets: [
+      {
+        id: "services-legal",
+        title: "Legal Stack",
+        subtitle: "Formation, equity, IP",
+        top: "22%",
+        left: "18%",
+      },
+      {
+        id: "services-finance",
+        title: "Finance Ops",
+        subtitle: "Accounting & CFO‑as‑a‑service",
+        top: "38%",
+        left: "56%",
+      },
+      {
+        id: "services-growth",
+        title: "Growth Partners",
+        subtitle: "Paid, CRO, brand",
+        top: "54%",
+        left: "32%",
+      },
+      {
+        id: "services-vendors",
+        title: "Vendor Desk",
+        subtitle: "Compare retainers & scopes",
+        top: "60%",
+        left: "64%",
+      },
+    ],
+  },
+];
+
+const AD_TABS_COUNT = spaces.length;
+
 // Mock data for the feed (categorized)
 const feedItems: FeedItem[] = [
   {
@@ -282,9 +589,13 @@ export default function Home() {
   >("suggested");
   const [selectedFeedCategory, setSelectedFeedCategory] =
     useState<FeedCategory | null>(null);
+  const [selectedAdIndex, setSelectedAdIndex] = useState(0);
   const [mainScrollOffset, setMainScrollOffset] = useState(0);
   const sliderInViewRef = useRef(false);
   const mainSearchOutOfViewRef = useRef(false);
+  const adHoverTimeoutRef = useRef<number | null>(null);
+  const [, setIsAdHovered] = useState(false);
+  const [isAdLongHover, setIsAdLongHover] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isFloatingSuggestionsOpen, setIsFloatingSuggestionsOpen] =
     useState(false);
@@ -293,6 +604,35 @@ export default function Home() {
     if (!selectedFeedCategory) return feedItems;
     return feedItems.filter((item) => item.category === selectedFeedCategory);
   }, [selectedFeedCategory]);
+
+  const activeSpace = useMemo(
+    () => spaces[selectedAdIndex % spaces.length],
+    [selectedAdIndex]
+  );
+
+  // When the search query is non-empty, prevent or cancel the long-hover state
+  useEffect(() => {
+    if (searchQuery.trim() !== "") {
+      if (adHoverTimeoutRef.current !== null) {
+        window.clearTimeout(adHoverTimeoutRef.current);
+        adHoverTimeoutRef.current = null;
+      }
+      if (isAdLongHover) {
+        setIsAdLongHover(false);
+      }
+    }
+  }, [searchQuery, isAdLongHover]);
+
+  // Auto-advance ad tab every 5 seconds
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setSelectedAdIndex((prev) => (prev + 1) % AD_TABS_COUNT);
+    }, 5000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   useEffect(() => {
     const sliderNode = sliderRef.current;
@@ -629,43 +969,113 @@ export default function Home() {
         {/* Display Slider Row */}
         <div
           ref={sliderRef}
-          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-6 bg-black/0 pt-[90px]"
+          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-6 bg-black/0 pt-[80px]"
           // Another option is without: sticky top-0 mb-[7.5vh]
         >
           {/* Ad Categories Items */}
-          <div className="no-scrollbar flex w-full max-w-[70%] items-center justify-center overflow-x-auto overflow-y-hidden px-5">
-            <div className="no-scrollbar flex min-w-max items-center gap-5">
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
-              <div className="h-8 w-14 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 bg-white/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px]" />
+          <div className="no-scrollbar w-full max-w-[70%] items-center justify-center overflow-x-auto overflow-y-hidden px-5 sm:hidden lg:flex">
+            <div className="no-scrollbar group flex min-w-max items-center gap-2 hover:gap-5">
+              {Array.from({ length: AD_TABS_COUNT }).map((_, idx) => {
+                const isSelected = idx === selectedAdIndex;
+                return (
+                  <button
+                    type="button"
+                    key={idx}
+                    onClick={() => setSelectedAdIndex(idx)}
+                    className={`h-3 w-5 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px] transition-all duration-300 ease-out group-hover:h-8 group-hover:w-14 ${
+                      isSelected
+                        ? "bg-white/80"
+                        : "bg-white/10 hover:bg-white/60"
+                    }`}
+                  />
+                );
+              })}
             </div>
           </div>
 
           {/* Ad Display */}
           <div
-            className={`w-[75%] rounded-sm border-[0.50px] border-black/10 bg-white/10 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px] transition-all duration-500 ease-out ${
-              isVisible ? "h-[45vh]" : "h-[45vh]"
+            className={`duration-250 relative w-[75%] overflow-hidden rounded-sm border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] ${
+              isVisible ? "h-[70%]" : "h-[45vh]"
             }`}
-          />
+            onMouseEnter={() => {
+              setIsAdHovered(true);
+              // Do not allow long-hover expansion when there is a query
+              if (searchQuery.trim() !== "") {
+                return;
+              }
+              if (adHoverTimeoutRef.current !== null) {
+                window.clearTimeout(adHoverTimeoutRef.current);
+              }
+              adHoverTimeoutRef.current = window.setTimeout(() => {
+                setIsAdLongHover(true);
+              }, 500);
+            }}
+            onMouseLeave={() => {
+              setIsAdHovered(false);
+              if (adHoverTimeoutRef.current !== null) {
+                window.clearTimeout(adHoverTimeoutRef.current);
+                adHoverTimeoutRef.current = null;
+              }
+              setIsAdLongHover(false);
+            }}
+          >
+            {/* Space name / query label */}
+            <div className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2">
+              <div className="bg-black/1 inline-flex items-center justify-center gap-2 rounded-b-[10px] border-x-[0.50px] border-b-[0.50px] border-black/10 px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+                <div className="font-['Neue_Montreal'] text-[11px] font-normal text-black/45">
+                  {searchQuery.trim() || activeSpace.name}
+                </div>
+              </div>
+            </div>
+
+            {/* Free‑form space canvas */}
+            <div
+              className={`relative flex h-full w-full items-center justify-center px-10 pb-10 pt-14 transition-opacity duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                isAdLongHover ? "opacity-100" : "opacity-20"
+              }`}
+            >
+              <div className="relative h-full w-full max-w-[640px]">
+                {activeSpace.widgets.map((widget) => (
+                  <div
+                    key={widget.id}
+                    className="bg-black/1 absolute flex w-[200px] flex-col gap-0 rounded-[2px] border-[0.50px] border-black/10 shadow-[0px_4px_35px_-20px_rgba(0,0,0,0.0)] backdrop-blur-xl transition-transform duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-0.5"
+                    style={{ top: widget.top, left: widget.left }}
+                  >
+                    {/* Image placeholder */}
+                    <div className="h-20 w-full border-b-[0.50px] border-black/[0.05] bg-black/[0.02]" />
+
+                    <div className="flex flex-col items-start justify-start -space-y-0.5 bg-white px-2.5 py-1.5">
+                      <div className="font-['Neue_Montreal'] text-[12px] font-medium text-black/85">
+                        {widget.title}
+                      </div>
+                      <div className="font-['Neue_Montreal'] text-[11px] font-normal leading-snug text-black/55">
+                        {widget.subtitle}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Logo */}
-          <div className="absolute left-1/2 top-[28vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-[4vh] font-normal text-black">
+          <div
+            className={`duration-250 absolute left-1/2 top-[22.5vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-5xl font-normal text-black transition-opacity ease-[cubic-bezier(0.19,1,0.22,1)] lg:top-[28vh] ${
+              isAdLongHover ? "opacity-0" : "opacity-100"
+            }`}
+          >
             WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
           </div>
         </div>
 
-        {/* For You Feed */}
-        {/* mt-[40vh] is to give space for the ad display */}
-        {/* pt-[60vh] is to push the feed out of the viewport, but keep the search container visible and above the ad display div */}
-        <div className="relative z-10 mt-[40vh] flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[60vh]">
+        {/* Scrolling Div */}
+        {/* mt controls offset from the ad display; it expands when hovering the ad space */}
+        <div
+          className={`relative z-10 flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[58.5vh] shadow-[0px_-40px_160px_-60px_rgba(0,0,0,0.05)] transition-[margin-top] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+            isAdLongHover ? "mt-[85vh]" : "mt-[41.5vh]"
+          }`}
+        >
           {/* Search Container */}
           <div className="absolute -top-6 z-20 flex flex-col items-center justify-start gap-8">
             <div className="relative z-30 flex flex-col items-center justify-start">
@@ -848,7 +1258,7 @@ export default function Home() {
 
           {/* Categories */}
           {/* -mt-[112px] is to compensate for the bottom bar height */}
-          <div className="-mt-[112px] inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.25px] border-black/5 px-2.5 py-3.5">
+          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.25px] border-black/5 px-2.5 py-3.5 lg:-mt-[112px]">
             <div className="inline-flex items-center justify-start gap-3.5">
               {feedCategoryTabs.map((tab) => {
                 const isSelected = selectedFeedCategory === tab.key;
@@ -876,6 +1286,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Feed Container */}
           <div className="relative flex w-full flex-col items-center justify-start overflow-hidden">
             {/* Feed Items */}
             <div className="inline-flex min-h-[87.5vh] w-[65%] flex-wrap content-start items-start justify-center gap-[34px] px-0 pb-[35vh] pt-16">
