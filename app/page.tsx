@@ -966,7 +966,7 @@ export default function Home() {
 
       {/* Main Container */}
       <div className="relative flex flex-col items-center justify-center gap-0">
-        {/* Display Slider Row */}
+        {/* Display Div */}
         <div
           ref={sliderRef}
           className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-6 bg-black/0 pt-[80px]"
@@ -995,7 +995,7 @@ export default function Home() {
 
           {/* Ad Display */}
           <div
-            className={`duration-250 relative w-[75%] overflow-hidden rounded-sm border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] ${
+            className={`duration-250 relative w-[75%] overflow-hidden rounded-none border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.0)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] ${
               isVisible ? "h-[70%]" : "h-[45vh]"
             }`}
             onMouseEnter={() => {
@@ -1021,11 +1021,19 @@ export default function Home() {
             }}
           >
             {/* Space name / query label */}
-            <div className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2">
-              <div className="bg-black/1 inline-flex items-center justify-center gap-2 rounded-b-[10px] border-x-[0.50px] border-b-[0.50px] border-black/10 px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+            <div className="pointer-events-none absolute left-1/2 top-0 z-20 flex -translate-x-1/2 flex-col items-center justify-start gap-3">
+              <div className="bg-black/1 inline-flex min-w-[220px] items-center justify-center gap-2 rounded-b-[10px] border-x-[0.50px] border-b-[0.50px] border-black/10 px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl">
                 <div className="font-['Neue_Montreal'] text-[11px] font-normal text-black/45">
                   {searchQuery.trim() || activeSpace.name}
                 </div>
+              </div>
+
+              <div
+                className={`font-['Neue_Montreal'] text-[11px] font-normal text-black/25 transition-opacity duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                  isAdLongHover ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                Hover outside to collapse
               </div>
             </div>
 
@@ -1138,10 +1146,10 @@ export default function Home() {
                     e.stopPropagation();
                   }
                 }}
-                className={`absolute left-1/2 top-full z-10 -mt-1 inline-flex w-[95%] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-bl-[10px] rounded-br-[10px] bg-black/[0.5%] pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
+                className={`absolute left-1/2 top-full z-10 -mt-1 inline-flex -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-bl-[10px] rounded-br-[10px] bg-black/[0.1%] pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
                   isSuggestionsHovered && mainScrollOffset === 0
-                    ? "max-h-[280px] min-h-[280px] pb-0 shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
-                    : "max-h-[32px] pb-0"
+                    ? "max-h-[280px] min-h-[280px] w-[95%] pb-0 shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
+                    : "max-h-[32px] w-[65%] min-w-[280px] pb-0"
                 }`}
               >
                 {/* Suggestions List Tabs */}
