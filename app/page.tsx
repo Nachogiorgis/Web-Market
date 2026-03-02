@@ -1,10 +1,14 @@
 "use client";
 
 import {
+  Activity,
+  Clapperboard,
   Compass,
   Dice5,
-  Landmark,
+  Gamepad2,
+  GraduationCap,
   Pencil,
+  PiggyBank,
   Plus,
   Search,
   ShoppingBag,
@@ -19,15 +23,16 @@ import { TopBar } from "./components/TopBar";
 
 type FeedCategory =
   | "explore"
+  | "monitoring"
   | "creating"
   | "learning"
   | "earning"
-  | "banking"
+  | "saving"
   | "investing"
   | "betting"
+  | "playing"
+  | "watching"
   | "shopping";
-// | "playing"
-// | "watching";
 
 type FeedItemCategory = Exclude<FeedCategory, "explore">;
 
@@ -40,30 +45,31 @@ type FeedItem = {
 };
 
 const feedCategoryTabs: Array<{ key: FeedCategory; label: string }> = [
-  // { key: "explore", label: "Explore" },
   { key: "creating", label: "Creating" },
+  { key: "monitoring", label: "Monitoring" },
+  // { key: "explore", label: "Explore" },
   { key: "learning", label: "Learning" },
   { key: "earning", label: "Earning" },
-  { key: "banking", label: "Banking" },
+  { key: "saving", label: "Saving" },
   { key: "investing", label: "Investing" },
   { key: "betting", label: "Betting" },
+  { key: "playing", label: "Playing" },
   { key: "shopping", label: "Shopping" },
-
-  // { key: "playing", label: "Playing" },
   // { key: "watching", label: "Watching" },
 ];
 
 const feedCategoryIcons: Record<FeedCategory, JSX.Element> = {
   explore: <Compass className="h-3.5 w-3.5" />,
+  monitoring: <Activity className="h-3.5 w-3.5" />,
   creating: <Pencil className="h-3.5 w-3.5" />,
-  learning: <Landmark className="h-3.5 w-3.5" />,
+  learning: <GraduationCap className="h-3.5 w-3.5" />,
   earning: <Wallet className="h-3.5 w-3.5" />,
-  banking: <Wallet className="h-3.5 w-3.5" />,
+  saving: <PiggyBank className="h-3.5 w-3.5" />,
   investing: <TrendingUp className="h-3.5 w-3.5" />,
-  shopping: <ShoppingBag className="h-3.5 w-3.5" />,
   betting: <Dice5 className="h-3.5 w-3.5" />,
-  // playing: <Gamepad2 className="h-3.5 w-3.5" />,
-  // watching: <Clapperboard className="h-3.5 w-3.5" />,
+  playing: <Gamepad2 className="h-3.5 w-3.5" />,
+  watching: <Clapperboard className="h-3.5 w-3.5" />,
+  shopping: <ShoppingBag className="h-3.5 w-3.5" />,
 };
 
 type Space = {
@@ -91,29 +97,29 @@ const spaces: Space[] = [
         id: "ai-api",
         title: "Model APIs",
         subtitle: "GPT-style, vision & embeddings",
-        top: "22%",
-        left: "20%",
+        top: "18%",
+        left: "12%",
       },
       {
         id: "ai-talent",
         title: "ML Talent",
         subtitle: "Fractional teams & contractors",
-        top: "30%",
-        left: "60%",
+        top: "22%",
+        left: "66%",
       },
       {
         id: "ai-infra",
         title: "Inference Infra",
         subtitle: "Deploy and monitor workloads",
-        top: "52%",
-        left: "26%",
+        top: "60%",
+        left: "18%",
       },
       {
         id: "ai-invest",
         title: "Studio Deals",
         subtitle: "Back high‑leverage builders",
-        top: "60%",
-        left: "64%",
+        top: "64%",
+        left: "70%",
       },
     ],
   },
@@ -127,29 +133,29 @@ const spaces: Space[] = [
         id: "latam-feed",
         title: "Founder Feed",
         subtitle: "Early‑stage updates & wins",
-        top: "24%",
-        left: "24%",
+        top: "18%",
+        left: "14%",
       },
       {
         id: "latam-hiring",
         title: "Hiring Board",
         subtitle: "Design, eng, growth roles",
-        top: "40%",
-        left: "62%",
+        top: "24%",
+        left: "68%",
       },
       {
         id: "latam-capital",
         title: "Capital Intros",
         subtitle: "Angels & micro‑funds",
-        top: "56%",
-        left: "32%",
+        top: "60%",
+        left: "20%",
       },
       {
         id: "latam-events",
         title: "Meetups",
         subtitle: "City‑based founder circles",
-        top: "64%",
-        left: "14%",
+        top: "68%",
+        left: "72%",
       },
     ],
   },
@@ -163,29 +169,29 @@ const spaces: Space[] = [
         id: "remote-gigs",
         title: "Curated Gigs",
         subtitle: "Design, dev, ops, research",
-        top: "20%",
-        left: "30%",
+        top: "16%",
+        left: "16%",
       },
       {
         id: "remote-marketplaces",
         title: "Platforms",
         subtitle: "Top places to apply this week",
-        top: "32%",
+        top: "22%",
         left: "64%",
       },
       {
         id: "remote-stacks",
         title: "Income Stacks",
         subtitle: "Stackable side‑income playbooks",
-        top: "54%",
-        left: "18%",
+        top: "58%",
+        left: "14%",
       },
       {
         id: "remote-tools",
         title: "Back‑office",
         subtitle: "Invoicing, tax, compliance",
-        top: "62%",
-        left: "48%",
+        top: "66%",
+        left: "70%",
       },
     ],
   },
@@ -199,29 +205,29 @@ const spaces: Space[] = [
         id: "sports-models",
         title: "Model Feeds",
         subtitle: "Win‑probabilities & spreads",
-        top: "22%",
-        left: "18%",
+        top: "18%",
+        left: "10%",
       },
       {
         id: "sports-markets",
         title: "Live Markets",
         subtitle: "On‑chain & book prices",
-        top: "38%",
-        left: "54%",
+        top: "24%",
+        left: "68%",
       },
       {
         id: "sports-prop",
         title: "Prop Builders",
         subtitle: "Custom player and team props",
-        top: "52%",
-        left: "34%",
+        top: "60%",
+        left: "18%",
       },
       {
         id: "sports-syndicate",
         title: "Syndicates",
         subtitle: "Pool capital & spread risk",
-        top: "64%",
-        left: "62%",
+        top: "68%",
+        left: "72%",
       },
     ],
   },
@@ -235,29 +241,29 @@ const spaces: Space[] = [
         id: "assets-market",
         title: "Asset Market",
         subtitle: "Starter kits & playbooks",
-        top: "24%",
-        left: "18%",
+        top: "18%",
+        left: "12%",
       },
       {
         id: "assets-saas",
         title: "Micro‑SaaS",
         subtitle: "Tiny products with MRR",
-        top: "28%",
-        left: "58%",
+        top: "24%",
+        left: "66%",
       },
       {
         id: "assets-licenses",
         title: "Licensing Desk",
         subtitle: "White‑label & OEM deals",
-        top: "50%",
-        left: "40%",
+        top: "60%",
+        left: "20%",
       },
       {
         id: "assets-bundles",
         title: "Creator Bundles",
         subtitle: "Design, copy & dev packs",
-        top: "60%",
-        left: "14%",
+        top: "68%",
+        left: "72%",
       },
     ],
   },
@@ -271,29 +277,29 @@ const spaces: Space[] = [
         id: "bio-courses",
         title: "Protocols",
         subtitle: "Sleep, focus, recovery",
-        top: "22%",
-        left: "26%",
+        top: "18%",
+        left: "16%",
       },
       {
         id: "bio-labs",
         title: "At‑home Labs",
         subtitle: "Bloodwork & biomarkers",
-        top: "40%",
-        left: "60%",
+        top: "24%",
+        left: "68%",
       },
       {
         id: "bio-stacks",
         title: "Stacks",
         subtitle: "Supplement & habit stacks",
-        top: "56%",
-        left: "18%",
+        top: "60%",
+        left: "14%",
       },
       {
         id: "bio-market",
         title: "Product Shelf",
         subtitle: "Trusted brands & tools",
-        top: "62%",
-        left: "44%",
+        top: "68%",
+        left: "70%",
       },
     ],
   },
@@ -307,29 +313,29 @@ const spaces: Space[] = [
         id: "climate-deals",
         title: "Dealflow",
         subtitle: "Seed to growth‑stage rounds",
-        top: "20%",
-        left: "22%",
+        top: "16%",
+        left: "14%",
       },
       {
         id: "climate-grants",
         title: "Grant Desk",
         subtitle: "Non‑dilutive climate capital",
-        top: "36%",
-        left: "60%",
+        top: "22%",
+        left: "66%",
       },
       {
         id: "climate-studios",
         title: "Studios",
         subtitle: "Co‑found with operators",
-        top: "52%",
-        left: "14%",
+        top: "58%",
+        left: "12%",
       },
       {
         id: "climate-partners",
         title: "Partners",
         subtitle: "Corporate and NGO partners",
-        top: "64%",
-        left: "40%",
+        top: "66%",
+        left: "70%",
       },
     ],
   },
@@ -343,29 +349,29 @@ const spaces: Space[] = [
         id: "services-legal",
         title: "Legal Stack",
         subtitle: "Formation, equity, IP",
-        top: "22%",
-        left: "18%",
+        top: "18%",
+        left: "12%",
       },
       {
         id: "services-finance",
         title: "Finance Ops",
         subtitle: "Accounting & CFO‑as‑a‑service",
-        top: "38%",
-        left: "56%",
+        top: "24%",
+        left: "68%",
       },
       {
         id: "services-growth",
         title: "Growth Partners",
         subtitle: "Paid, CRO, brand",
-        top: "54%",
-        left: "32%",
+        top: "60%",
+        left: "20%",
       },
       {
         id: "services-vendors",
         title: "Vendor Desk",
         subtitle: "Compare retainers & scopes",
-        top: "60%",
-        left: "64%",
+        top: "68%",
+        left: "72%",
       },
     ],
   },
@@ -380,7 +386,7 @@ const feedItems: FeedItem[] = [
     title: "High-Yield Savings Accounts",
     subtitle: "APY up to 5.25%",
     action: "Compare Rates",
-    category: "banking",
+    category: "saving",
   },
   {
     id: 2,
@@ -450,7 +456,7 @@ const feedItems: FeedItem[] = [
     title: "Credit Card Rewards Programs",
     subtitle: "Earn 2x points",
     action: "Compare Cards",
-    category: "banking",
+    category: "saving",
   },
   {
     id: 12,
@@ -471,7 +477,7 @@ const feedItems: FeedItem[] = [
     title: "Financial Planning Services",
     subtitle: "Free consultation",
     action: "Book Now",
-    category: "banking",
+    category: "saving",
   },
   {
     id: 15,
@@ -513,7 +519,7 @@ const feedItems: FeedItem[] = [
     title: "Business Loan Options",
     subtitle: "Low interest rates",
     action: "Get Quote",
-    category: "banking",
+    category: "saving",
   },
   {
     id: 21,
@@ -594,7 +600,7 @@ export default function Home() {
   const sliderInViewRef = useRef(false);
   const mainSearchOutOfViewRef = useRef(false);
   const adHoverTimeoutRef = useRef<number | null>(null);
-  const [, setIsAdHovered] = useState(false);
+  const [isAdHovered, setIsAdHovered] = useState(false);
   const [isAdLongHover, setIsAdLongHover] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isFloatingSuggestionsOpen, setIsFloatingSuggestionsOpen] =
@@ -708,18 +714,18 @@ export default function Home() {
     };
   }, []);
 
-  // Track main scroll position
+  // Track main scroll position (use window scroll so scrolling works everywhere)
   useEffect(() => {
-    const mainElement = document.querySelector("main");
-    if (!mainElement) return;
-
     const handleScroll = () => {
-      const scrollTop = mainElement.scrollTop;
+      const scrollTop =
+        window.scrollY || document.documentElement.scrollTop || 0;
       setMainScrollOffset(scrollTop);
     };
 
-    mainElement.addEventListener("scroll", handleScroll, { passive: true });
-    return () => mainElement.removeEventListener("scroll", handleScroll);
+    // Initialize on mount
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Collapse suggestions if main view is scrolled
@@ -727,8 +733,50 @@ export default function Home() {
     if (mainScrollOffset > 0) {
       // Immediately collapse if scrolled, regardless of hover state
       setIsSuggestionsHovered(false);
+      // Also collapse any active long-hover state on the ad display
+      if (adHoverTimeoutRef.current !== null) {
+        window.clearTimeout(adHoverTimeoutRef.current);
+        adHoverTimeoutRef.current = null;
+      }
+      setIsAdHovered(false);
+      setIsAdLongHover(false);
     }
   }, [mainScrollOffset]);
+
+  // Prevent page scroll when hovering over the ad display
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (!isAdHovered) return;
+      const target = e.target as HTMLElement;
+      const adRoot = target.closest("[data-ad-display-root]");
+      if (adRoot) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isAdHovered) return;
+      const target = e.target as HTMLElement;
+      const adRoot = target.closest("[data-ad-display-root]");
+      if (adRoot) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    if (isAdHovered) {
+      document.addEventListener("wheel", handleWheel, { passive: false });
+      document.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+    }
+
+    return () => {
+      document.removeEventListener("wheel", handleWheel);
+      document.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, [isAdHovered]);
 
   // Prevent main scroll when scrolling inside suggestions list
   useEffect(() => {
@@ -797,13 +845,19 @@ export default function Home() {
   }, [selectedTab, searchQuery]);
 
   return (
-    <main className="no-scrollbar relative h-screen w-screen overflow-y-auto scroll-smooth bg-[#F6F6F6] outline-none">
+    <main className="no-scrollbar relative min-h-screen w-screen overflow-x-hidden bg-[#F6F6F6] outline-none">
       {/* Top Bar */}
-      <TopBar mode="home" showCenterCollapsed={showCompactSearch} />
+      <TopBar
+        mode="home"
+        showCenterCollapsed={showCompactSearch}
+        adTabsCount={AD_TABS_COUNT}
+        selectedAdIndex={selectedAdIndex}
+        onSelectAdIndex={setSelectedAdIndex}
+      />
 
       {/* Floating Main Search Bar (appears at bottom when main search leaves view) */}
       <div
-        className={`fixed inset-x-0 bottom-[75px] z-[999] flex justify-center transition-all duration-300 ease-out ${
+        className={`fixed inset-x-0 bottom-[72px] z-[999] flex justify-center transition-all duration-300 ease-out ${
           showCompactSearch
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-24 opacity-0"
@@ -811,8 +865,8 @@ export default function Home() {
       >
         <div className="relative flex w-full justify-center">
           {/* Main Search Bar (floating variant) */}
-          <div className="relative z-20 inline-flex h-11 w-[55vw] max-w-[640px] items-center justify-between overflow-hidden rounded-[5px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.15)]">
-            <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl">
+          <div className="group relative z-20 inline-flex h-2.5 w-[20vw] max-w-[640px] items-center justify-between overflow-hidden rounded-[5px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.10)] transition-all duration-300 ease-out hover:h-11 hover:w-[55vw]">
+            <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
               <Plus className="h-5 stroke-black/40" />
             </div>
             <input
@@ -824,7 +878,7 @@ export default function Home() {
                 setSearchQuery(value);
                 setIsFloatingSuggestionsOpen(value.trim() !== "");
               }}
-              className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-[15px] font-normal text-black/100 outline-none placeholder:text-black/30 focus:outline-none"
+              className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-[15px] font-normal text-black/100 opacity-0 outline-none transition-opacity duration-300 ease-out placeholder:text-black/30 focus:outline-none group-hover:opacity-100"
               style={{ boxShadow: "none" }}
               tabIndex={0}
               onKeyDown={(e) => {
@@ -844,7 +898,7 @@ export default function Home() {
                 setTimeout(() => setIsFloatingSuggestionsOpen(false), 120);
               }}
             />
-            <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl">
+            <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
               <Search className="h-5 stroke-black/40" />
             </div>
           </div>
@@ -965,43 +1019,23 @@ export default function Home() {
       <BottomBar />
 
       {/* Main Container */}
-      <div className="relative flex flex-col items-center justify-center gap-0">
+      <div className="no-scrollbar relative flex flex-col items-center justify-center gap-0">
         {/* Display Div */}
         <div
           ref={sliderRef}
-          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-6 bg-black/0 pt-[80px]"
+          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-6 bg-black/0 pt-[60px]"
           // Another option is without: sticky top-0 mb-[7.5vh]
         >
-          {/* Ad Categories Items */}
-          <div className="no-scrollbar w-full max-w-[70%] items-center justify-center overflow-x-auto overflow-y-hidden px-5 sm:hidden lg:flex">
-            <div className="no-scrollbar group flex min-w-max items-center gap-2 hover:gap-5">
-              {Array.from({ length: AD_TABS_COUNT }).map((_, idx) => {
-                const isSelected = idx === selectedAdIndex;
-                return (
-                  <button
-                    type="button"
-                    key={idx}
-                    onClick={() => setSelectedAdIndex(idx)}
-                    className={`h-3 w-5 flex-shrink-0 rounded-sm border-[0.5px] border-black/10 shadow-[0px_4px_14px_0px_rgba(0,0,0,0.02)] backdrop-blur-[50px] transition-all duration-300 ease-out group-hover:h-8 group-hover:w-14 ${
-                      isSelected
-                        ? "bg-white/80"
-                        : "bg-white/10 hover:bg-white/60"
-                    }`}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
           {/* Ad Display */}
           <div
-            className={`duration-250 relative w-[75%] overflow-hidden rounded-none border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.0)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] ${
-              isVisible ? "h-[70%]" : "h-[45vh]"
+            data-ad-display-root
+            className={`duration-250 relative w-[82.5%] overflow-hidden rounded-none border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.0)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] hover:w-[92.5%] hover:bg-black/[0.35%] ${
+              isVisible ? "h-[87.5%]" : "h-[45vh]"
             }`}
             onMouseEnter={() => {
               setIsAdHovered(true);
-              // Do not allow long-hover expansion when there is a query
-              if (searchQuery.trim() !== "") {
+              // Do not allow long-hover expansion when there is a query or the page is scrolled
+              if (searchQuery.trim() !== "" || mainScrollOffset > 0) {
                 return;
               }
               if (adHoverTimeoutRef.current !== null) {
@@ -1021,9 +1055,9 @@ export default function Home() {
             }}
           >
             {/* Space name / query label */}
-            <div className="pointer-events-none absolute left-1/2 top-0 z-20 flex -translate-x-1/2 flex-col items-center justify-start gap-3">
-              <div className="bg-black/1 inline-flex min-w-[220px] items-center justify-center gap-2 rounded-b-[10px] border-x-[0.50px] border-b-[0.50px] border-black/10 px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-                <div className="font-['Neue_Montreal'] text-[11px] font-normal text-black/45">
+            <div className="pointer-events-none absolute left-1/2 top-3 z-20 flex -translate-x-1/2 flex-col items-center justify-start gap-2.5">
+              <div className="inline-flex min-w-[220px] items-center justify-center gap-2 rounded-[10px] border-x-[0.50px] border-y-[0.50px] border-black/10 bg-black/[0.1%] px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+                <div className="font-['Neue_Montreal'] text-[11px] font-normal text-black/35">
                   {searchQuery.trim() || activeSpace.name}
                 </div>
               </div>
@@ -1033,32 +1067,38 @@ export default function Home() {
                   isAdLongHover ? "opacity-100" : "opacity-0"
                 }`}
               >
-                Hover outside to collapse
+                Hover outside to close
               </div>
             </div>
 
             {/* Free‑form space canvas */}
             <div
               className={`relative flex h-full w-full items-center justify-center px-10 pb-10 pt-14 transition-opacity duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                isAdLongHover ? "opacity-100" : "opacity-20"
+                isAdLongHover ? "opacity-100" : "opacity-0"
               }`}
             >
               <div className="relative h-full w-full max-w-[640px]">
                 {activeSpace.widgets.map((widget) => (
                   <div
                     key={widget.id}
-                    className="bg-black/1 absolute flex w-[200px] flex-col gap-0 rounded-[2px] border-[0.50px] border-black/10 shadow-[0px_4px_35px_-20px_rgba(0,0,0,0.0)] backdrop-blur-xl transition-transform duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] hover:-translate-y-0.5"
+                    className="group absolute flex w-[180px] cursor-pointer flex-col gap-0 rounded-[2px] border-[0.50px] border-black/10 shadow-[0px_4px_35px_-20px_rgba(0,0,0,0.0)] backdrop-blur-xl transition-transform duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] hover:bg-black/[1%]"
                     style={{ top: widget.top, left: widget.left }}
                   >
                     {/* Image placeholder */}
-                    <div className="h-20 w-full border-b-[0.50px] border-black/[0.05] bg-black/[0.02]" />
+                    <div className="h-28 w-full bg-black/[0.0]" />
 
-                    <div className="flex flex-col items-start justify-start -space-y-0.5 bg-white px-2.5 py-1.5">
-                      <div className="font-['Neue_Montreal'] text-[12px] font-medium text-black/85">
+                    <div className="absolute bottom-0 left-0 flex h-0 w-full items-center justify-center -space-y-0.5 border-t-[0.50px] border-black/[0.05] bg-white/5 px-2.5 py-1.5 opacity-0 transition-opacity duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:h-auto group-hover:opacity-100">
+                      {/* <div className="font-['Neue_Montreal'] text-[12px] font-medium text-black/85">
                         {widget.title}
-                      </div>
+                      </div> */}
                       <div className="font-['Neue_Montreal'] text-[11px] font-normal leading-snug text-black/55">
                         {widget.subtitle}
+                      </div>
+                    </div>
+
+                    <div className="absolute -bottom-[28px] left-1/2 flex -translate-x-1/2 items-start justify-center gap-0.5 rounded-md bg-black/0 px-1.5 py-[2px]">
+                      <div className="font-['Neue_Montreal'] text-[11px] text-black/40">
+                        {widget.title}
                       </div>
                     </div>
                   </div>
@@ -1068,20 +1108,20 @@ export default function Home() {
           </div>
 
           {/* Logo */}
-          <div
-            className={`duration-250 absolute left-1/2 top-[22.5vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-5xl font-normal text-black transition-opacity ease-[cubic-bezier(0.19,1,0.22,1)] lg:top-[28vh] ${
-              isAdLongHover ? "opacity-0" : "opacity-100"
+          {/* <div
+            className={`duration-250 absolute left-1/2 top-[22.5vh] lg:top-[27.5vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-5xl font-normal text-black transition-opacity ease-[cubic-bezier(0.19,1,0.22,1)] ${
+              isAdLongHover ? "opacity-0 hidden" : "opacity-100"
             }`}
           >
             WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
-          </div>
+          </div> */}
         </div>
 
         {/* Scrolling Div */}
         {/* mt controls offset from the ad display; it expands when hovering the ad space */}
         <div
-          className={`relative z-10 flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/15 bg-[#F6F6F6] pt-[58.5vh] shadow-[0px_-40px_160px_-60px_rgba(0,0,0,0.05)] transition-[margin-top] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-            isAdLongHover ? "mt-[85vh]" : "mt-[41.5vh]"
+          className={`relative z-10 flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/10 bg-[#F6F6F6] pt-[60vh] shadow-[0px_-20px_120px_-60px_rgba(0,0,0,0.05)] transition-[margin-top] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+            isAdLongHover ? "mt-[100vh]" : "mt-[40vh]"
           }`}
         >
           {/* Search Container */}
@@ -1123,9 +1163,9 @@ export default function Home() {
               <div
                 data-suggestions-list
                 onMouseEnter={() => {
-                  // Check scroll position directly from main element to ensure accuracy
-                  const mainElement = document.querySelector("main");
-                  const currentScrollOffset = mainElement?.scrollTop || 0;
+                  // Check scroll position directly to ensure accuracy
+                  const currentScrollOffset =
+                    window.scrollY || document.documentElement.scrollTop || 0;
                   if (currentScrollOffset === 0 && mainScrollOffset === 0) {
                     setIsSuggestionsHovered(true);
                   } else {
@@ -1256,7 +1296,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => goToSearch(searchQuery || "I'm Feeling Lucky")}
-              className="z-20 mt-10 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[2.5%]"
+              className="z-20 mt-8 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[2.5%]"
             >
               <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/60">
                 I&apos;m Feeling Lucky
@@ -1266,8 +1306,8 @@ export default function Home() {
 
           {/* Categories */}
           {/* -mt-[112px] is to compensate for the bottom bar height */}
-          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.25px] border-black/5 px-2.5 py-3.5 lg:-mt-[112px]">
-            <div className="inline-flex items-center justify-start gap-3.5">
+          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.25px] border-black/5 px-3.5 py-3.5 opacity-100 lg:-mt-[112px]">
+            <div className="inline-flex w-full max-w-[60%] items-center justify-center gap-3.5">
               {feedCategoryTabs.map((tab) => {
                 const isSelected = selectedFeedCategory === tab.key;
                 return (
@@ -1276,7 +1316,7 @@ export default function Home() {
                     onClick={() =>
                       setSelectedFeedCategory(isSelected ? null : tab.key)
                     }
-                    className={`flex h-auto w-24 cursor-pointer items-center justify-center gap-2.5 rounded-lg border-[0.5px] border-black/10 px-4 py-[6px] transition-colors ${
+                    className={`flex h-auto w-full min-w-24 cursor-pointer items-center justify-center gap-2.5 rounded-lg border-[0.5px] border-black/10 px-4 py-[6px] transition-colors ${
                       isSelected
                         ? "bg-white/40 text-black"
                         : "text-black/35 hover:bg-black/[2%] hover:text-black/60"
