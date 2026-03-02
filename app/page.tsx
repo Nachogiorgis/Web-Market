@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FeedItemCard } from "./components/FeedItemCard";
+import { ExpandedFeedItemCard } from "./components/ExpandedFeedItemCard";
 import { BottomBar } from "./components/BottomBar";
 import { TopBar } from "./components/TopBar";
 
@@ -629,6 +629,18 @@ export default function Home() {
     }
   }, [searchQuery, isAdLongHover]);
 
+  // Allow collapsing the expanded ad view with Escape
+  useEffect(() => {
+    if (!isAdLongHover) return;
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsAdLongHover(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isAdLongHover]);
+
   // Auto-advance ad tab every 5 seconds
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -745,8 +757,9 @@ export default function Home() {
 
   // Prevent page scroll when hovering over the ad display
   useEffect(() => {
+    const shouldBlockScroll = isAdHovered && isAdLongHover;
     const handleWheel = (e: WheelEvent) => {
-      if (!isAdHovered) return;
+      if (!shouldBlockScroll) return;
       const target = e.target as HTMLElement;
       const adRoot = target.closest("[data-ad-display-root]");
       if (adRoot) {
@@ -756,7 +769,7 @@ export default function Home() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isAdHovered) return;
+      if (!shouldBlockScroll) return;
       const target = e.target as HTMLElement;
       const adRoot = target.closest("[data-ad-display-root]");
       if (adRoot) {
@@ -765,7 +778,7 @@ export default function Home() {
       }
     };
 
-    if (isAdHovered) {
+    if (shouldBlockScroll) {
       document.addEventListener("wheel", handleWheel, { passive: false });
       document.addEventListener("touchmove", handleTouchMove, {
         passive: false,
@@ -776,7 +789,7 @@ export default function Home() {
       document.removeEventListener("wheel", handleWheel);
       document.removeEventListener("touchmove", handleTouchMove);
     };
-  }, [isAdHovered]);
+  }, [isAdHovered, isAdLongHover]);
 
   // Prevent main scroll when scrolling inside suggestions list
   useEffect(() => {
@@ -857,15 +870,15 @@ export default function Home() {
 
       {/* Floating Main Search Bar (appears at bottom when main search leaves view) */}
       <div
-        className={`fixed inset-x-0 bottom-[72px] z-[999] flex justify-center transition-all duration-300 ease-out ${
+        className={`fixed bottom-[72px] left-1/2 z-[999] flex -translate-x-1/2 justify-center transition-all duration-300 ease-out ${
           showCompactSearch
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-24 opacity-0"
         }`}
       >
-        <div className="relative flex w-full justify-center">
+        <div className="group relative flex w-full justify-center">
           {/* Main Search Bar (floating variant) */}
-          <div className="group relative z-20 inline-flex h-2.5 w-[20vw] max-w-[640px] items-center justify-between overflow-hidden rounded-[5px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.10)] transition-all duration-300 ease-out hover:h-11 hover:w-[55vw]">
+          <div className="relative z-20 inline-flex h-2.5 w-[20vw] max-w-[530px] items-center justify-between overflow-hidden rounded-[5px] border-[0.5px] border-black/0 bg-black/[3.5%] px-2 py-1 shadow-[0px_6px_40px_-8px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-out group-hover:h-11 group-hover:w-[55vw] group-hover:border-black/5">
             <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
               <Plus className="h-5 stroke-black/40" />
             </div>
@@ -905,10 +918,10 @@ export default function Home() {
 
           {/* Suggestions List – opens upward from floating search */}
           <div
-            className={`absolute bottom-full left-1/2 -mb-1 inline-flex w-[95%] max-w-[620px] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-b-[0px] rounded-t-[10px] bg-black/[0.5%] pb-1 pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
+            className={`absolute bottom-full left-1/2 -mb-1 inline-flex w-[95%] max-w-[510px] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-b-[0px] rounded-t-[10px] bg-black/[0.5%] pb-1 pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
               isFloatingSuggestionsOpen
-                ? "max-h-[280px] min-h-[120px] pb-0 opacity-100 shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
-                : "max-h-[0px] pb-0 opacity-0"
+                ? "pointer-events-none max-h-[0px] min-h-[0px] pb-0 opacity-0 group-hover:pointer-events-auto group-hover:max-h-[280px] group-hover:min-h-[120px] group-hover:opacity-100 group-hover:shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
+                : "pointer-events-none max-h-[0px] min-h-[0px] pb-0 opacity-0"
             }`}
           >
             {/* Suggestions List Tabs */}
@@ -1029,45 +1042,66 @@ export default function Home() {
           {/* Ad Display */}
           <div
             data-ad-display-root
-            className={`duration-250 relative w-[82.5%] overflow-hidden rounded-none border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.0)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] hover:w-[92.5%] hover:bg-black/[0.35%] ${
+            className={`duration-250 relative w-[82.5%] overflow-hidden rounded-none border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.0)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] ${
               isVisible ? "h-[87.5%]" : "h-[45vh]"
-            }`}
+            } ${isAdHovered && isAdLongHover ? "w-[92.5%] bg-black/[0.35%]" : ""}`}
             onMouseEnter={() => {
               setIsAdHovered(true);
-              // Do not allow long-hover expansion when there is a query or the page is scrolled
-              if (searchQuery.trim() !== "" || mainScrollOffset > 0) {
-                return;
-              }
-              if (adHoverTimeoutRef.current !== null) {
-                window.clearTimeout(adHoverTimeoutRef.current);
-              }
-              adHoverTimeoutRef.current = window.setTimeout(() => {
-                setIsAdLongHover(true);
-              }, 500);
+              // Long-hover now activates immediately on hover instead of after 0.5s
+              // if (searchQuery.trim() === "" && mainScrollOffset === 0) {
+              //   setIsAdLongHover(true);
+              // }
+              // // Do not allow long-hover expansion when there is a query or the page is scrolled
+              // if (searchQuery.trim() !== "" || mainScrollOffset > 0) {
+              //   return;
+              // }
+              // if (adHoverTimeoutRef.current !== null) {
+              //   window.clearTimeout(adHoverTimeoutRef.current);
+              // }
+              // adHoverTimeoutRef.current = window.setTimeout(() => {
+              //   setIsAdLongHover(true);
+              // }, 500);
             }}
             onMouseLeave={() => {
               setIsAdHovered(false);
-              if (adHoverTimeoutRef.current !== null) {
-                window.clearTimeout(adHoverTimeoutRef.current);
-                adHoverTimeoutRef.current = null;
-              }
               setIsAdLongHover(false);
+              // if (adHoverTimeoutRef.current !== null) {
+              //   window.clearTimeout(adHoverTimeoutRef.current);
+              //   adHoverTimeoutRef.current = null;
+              // }
+              // setIsAdLongHover(false);
             }}
           >
             {/* Space name / query label */}
-            <div className="pointer-events-none absolute left-1/2 top-3 z-20 flex -translate-x-1/2 flex-col items-center justify-start gap-2.5">
-              <div className="inline-flex min-w-[220px] items-center justify-center gap-2 rounded-[10px] border-x-[0.50px] border-y-[0.50px] border-black/10 bg-black/[0.1%] px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+            <div className="absolute left-1/2 top-3 z-20 flex -translate-x-1/2 flex-col items-center justify-start gap-2.5">
+              <div
+                className="inline-flex min-w-[220px] items-center justify-center gap-2 rounded-[10px] border-x-[0.50px] border-y-[0.50px] border-black/10 bg-black/[0.1%] px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl"
+                onMouseEnter={() => {
+                  setIsAdHovered(true);
+                  if (searchQuery.trim() === "" && mainScrollOffset === 0) {
+                    setIsAdLongHover(true);
+                  }
+                }}
+                // onMouseLeave={() => {
+                //   setIsAdHovered(false);
+                //   setIsAdLongHover(false);
+                // }}
+              >
                 <div className="font-['Neue_Montreal'] text-[11px] font-normal text-black/35">
                   {searchQuery.trim() || activeSpace.name}
                 </div>
               </div>
 
               <div
+                onClick={() => setIsAdLongHover(false)}
+                role="button"
                 className={`font-['Neue_Montreal'] text-[11px] font-normal text-black/25 transition-opacity duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                  isAdLongHover ? "opacity-100" : "opacity-0"
+                  isAdLongHover
+                    ? "pointer-events-auto cursor-pointer opacity-100"
+                    : "pointer-events-none opacity-0"
                 }`}
               >
-                Hover outside to close
+                Collapse (Esc)
               </div>
             </div>
 
@@ -1296,9 +1330,9 @@ export default function Home() {
             <button
               type="button"
               onClick={() => goToSearch(searchQuery || "I'm Feeling Lucky")}
-              className="z-20 mt-8 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[2.5%]"
+              className="z-20 mt-8 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[1.5%]"
             >
-              <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/60">
+              <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/80">
                 I&apos;m Feeling Lucky
               </div>
             </button>
@@ -1306,7 +1340,7 @@ export default function Home() {
 
           {/* Categories */}
           {/* -mt-[112px] is to compensate for the bottom bar height */}
-          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.25px] border-black/5 px-3.5 py-3.5 opacity-100 lg:-mt-[112px]">
+          <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.5px] border-black/10 px-3.5 py-3.5 opacity-100 lg:-mt-[112px]">
             <div className="inline-flex w-full max-w-[60%] items-center justify-center gap-3.5">
               {feedCategoryTabs.map((tab) => {
                 const isSelected = selectedFeedCategory === tab.key;
@@ -1337,9 +1371,9 @@ export default function Home() {
           {/* Feed Container */}
           <div className="relative flex w-full flex-col items-center justify-start overflow-hidden">
             {/* Feed Items */}
-            <div className="inline-flex min-h-[87.5vh] w-[65%] flex-wrap content-start items-start justify-center gap-[34px] px-0 pb-[35vh] pt-16">
+            <div className="feed-border-vertical inline-flex min-h-[87.5vh] w-2/3 flex-wrap content-start items-start justify-center gap-[40px] px-[5vw] pb-[35vh] pt-[7.5vw]">
               {visibleFeedItems.map((item) => (
-                <FeedItemCard
+                <ExpandedFeedItemCard
                   key={item.id}
                   title={item.title}
                   subtitle={item.subtitle}
@@ -1350,7 +1384,7 @@ export default function Home() {
             </div>
 
             {/* Background Grid */}
-            <div className="pointer-events-none absolute inset-0 -z-10 flex justify-center">
+            {/* <div className="pointer-events-none absolute inset-0 -z-10 flex justify-center">
               <div className="grid h-full w-full grid-cols-8">
                 {Array.from({ length: 200 }).map((_, index) => (
                   <div
@@ -1360,7 +1394,7 @@ export default function Home() {
                   />
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
