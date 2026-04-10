@@ -59,7 +59,7 @@ export function TopBar({
         }
         setIsAgentHovered(false);
       }}
-      className="relative mx-0.5 flex min-h-7 flex-shrink-0 items-center justify-center gap-0.5 overflow-hidden rounded-b-xl border-x-[0.50px] border-b-[0.50px] border-black/10 bg-white/[1%] px-1 py-1.5 backdrop-blur-lg transition-all duration-300 ease-out"
+      className="relative mx-0.5 flex min-h-7 min-w-[200px] flex-shrink-0 items-center justify-center gap-0.5 overflow-hidden rounded-b-xl border-x-[0.50px] border-b-[0.50px] border-black/10 bg-white/[1%] px-1 py-1.5 backdrop-blur-lg transition-all duration-300 ease-out"
     >
       {!agentExpanded ? (
         <div className="flex h-5 w-10 items-center justify-center gap-1.5 rounded-md px-2 py-[3px]">
@@ -180,15 +180,27 @@ export function TopBar({
               <div className="no-scrollbar w-full items-center justify-center overflow-x-auto overflow-y-hidden px-5 sm:hidden lg:flex">
                 {adTabsCount && adTabsCount > 0 ? (
                   <div className="no-scrollbar group flex min-w-max items-center gap-2.5 hover:gap-2">
-                    {Array.from({ length: adTabsCount }, (_, idx) => idx)
-                      .slice(0, Math.floor(adTabsCount / 2))
-                      .map((idx) => renderAdButton(idx))}
+                    <div
+                      className={`flex flex-shrink-0 items-center gap-2.5 overflow-hidden transition-all duration-300 ease-out ${
+                        agentExpanded ? "h-0 w-0 min-w-0 opacity-0" : ""
+                      }`}
+                    >
+                      {Array.from({ length: adTabsCount }, (_, idx) => idx)
+                        .slice(0, Math.floor(adTabsCount / 2))
+                        .map((idx) => renderAdButton(idx))}
+                    </div>
 
                     {renderAgentFeedSwitcher()}
 
-                    {Array.from({ length: adTabsCount }, (_, idx) => idx)
-                      .slice(Math.floor(adTabsCount / 2))
-                      .map((idx) => renderAdButton(idx))}
+                    <div
+                      className={`flex flex-shrink-0 items-center gap-2.5 overflow-hidden transition-all duration-300 ease-out ${
+                        agentExpanded ? "h-0 w-0 min-w-0 opacity-0" : ""
+                      }`}
+                    >
+                      {Array.from({ length: adTabsCount }, (_, idx) => idx)
+                        .slice(Math.floor(adTabsCount / 2))
+                        .map((idx) => renderAdButton(idx))}
+                    </div>
                   </div>
                 ) : (
                   renderAgentFeedSwitcher()

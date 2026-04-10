@@ -1,24 +1,11 @@
 "use client";
 
-import {
-  Activity,
-  Clapperboard,
-  Compass,
-  Dice5,
-  Gamepad2,
-  GraduationCap,
-  Pencil,
-  PiggyBank,
-  Plus,
-  Search,
-  ShoppingBag,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ExpandedFeedItemCard } from "./components/ExpandedFeedItemCard";
 import { BottomBar } from "./components/BottomBar";
+import { CategoriesExplorerView } from "./components/CategoriesExplorerView";
 import { TopBar } from "./components/TopBar";
 
 type FeedCategory =
@@ -42,35 +29,63 @@ type FeedItem = {
   subtitle: string;
   action: string;
   category: FeedItemCategory;
+  segment: FeedSegment;
 };
 
-const feedCategoryTabs: Array<{ key: FeedCategory; label: string }> = [
-  { key: "creating", label: "Creating" },
-  { key: "monitoring", label: "Monitoring" },
-  // { key: "explore", label: "Explore" },
-  { key: "learning", label: "Learning" },
-  { key: "earning", label: "Earning" },
-  { key: "saving", label: "Saving" },
-  { key: "investing", label: "Investing" },
-  { key: "betting", label: "Betting" },
-  { key: "playing", label: "Playing" },
-  { key: "shopping", label: "Shopping" },
-  // { key: "watching", label: "Watching" },
+type FeedSegment = "all" | "objects" | "clusters";
+
+type NewCategoryKey =
+  | "media"
+  | "creative"
+  | "shopping"
+  | "travel"
+  | "experiences"
+  | "health"
+  | "education"
+  | "vehicles"
+  | "properties"
+  | "services"
+  | "work"
+  | "banking"
+  | "investing"
+  | "betting"
+  | "games";
+
+/** New category strip (matches design); `iconStyle` alternates circle border vs outline treatment. */
+const newCategoryList: Array<{
+  key: NewCategoryKey;
+  label: string;
+  iconStyle: "border" | "outline";
+}> = [
+  { key: "media", label: "Media", iconStyle: "border" },
+  { key: "creative", label: "Creative", iconStyle: "outline" },
+  { key: "shopping", label: "Shopping", iconStyle: "outline" },
+  { key: "travel", label: "Travel", iconStyle: "outline" },
+  { key: "experiences", label: "Experiences", iconStyle: "outline" },
+  { key: "health", label: "Health", iconStyle: "border" },
+  { key: "education", label: "Education", iconStyle: "border" },
+  { key: "vehicles", label: "Vehicles", iconStyle: "outline" },
+  { key: "properties", label: "Properties", iconStyle: "outline" },
+  { key: "services", label: "Services", iconStyle: "border" },
+  { key: "work", label: "Work", iconStyle: "border" },
+  { key: "banking", label: "Banking", iconStyle: "border" },
+  { key: "investing", label: "Investing", iconStyle: "border" },
+  { key: "betting", label: "Betting", iconStyle: "border" },
+  { key: "games", label: "Games", iconStyle: "border" },
 ];
 
-const feedCategoryIcons: Record<FeedCategory, JSX.Element> = {
-  explore: <Compass className="h-3.5 w-3.5" />,
-  monitoring: <Activity className="h-3.5 w-3.5" />,
-  creating: <Pencil className="h-3.5 w-3.5" />,
-  learning: <GraduationCap className="h-3.5 w-3.5" />,
-  earning: <Wallet className="h-3.5 w-3.5" />,
-  saving: <PiggyBank className="h-3.5 w-3.5" />,
-  investing: <TrendingUp className="h-3.5 w-3.5" />,
-  betting: <Dice5 className="h-3.5 w-3.5" />,
-  playing: <Gamepad2 className="h-3.5 w-3.5" />,
-  watching: <Clapperboard className="h-3.5 w-3.5" />,
-  shopping: <ShoppingBag className="h-3.5 w-3.5" />,
-};
+/** Optional feed filter when a new category maps to an existing feed item category. */
+const newCategoryFeedFilter: Partial<Record<NewCategoryKey, FeedItemCategory>> =
+  {
+    creative: "creating",
+    shopping: "shopping",
+    education: "learning",
+    work: "earning",
+    banking: "saving",
+    investing: "investing",
+    betting: "betting",
+    games: "playing",
+  };
 
 type Space = {
   name: string;
@@ -383,164 +398,188 @@ const AD_TABS_COUNT = spaces.length;
 const feedItems: FeedItem[] = [
   {
     id: 1,
-    title: "High-Yield Savings Accounts",
-    subtitle: "APY up to 5.25%",
-    action: "Compare Rates",
+    title: "Chase Sapphire Dining Flash Deal",
+    subtitle: "Tonight‑only 10% cashback at partner restaurants near you.",
+    action: "View Offer",
     category: "saving",
+    segment: "objects",
   },
   {
     id: 2,
-    title: "Remote Data Analyst Positions",
-    subtitle: "Starting at $65k",
-    action: "Apply Now",
+    title: "TikTok UGC Creator – Skincare Brand",
+    subtitle: "Shoot 3 short‑form videos per week from home.",
+    action: "View Brief",
     category: "earning",
+    segment: "objects",
   },
   {
     id: 3,
-    title: "Stock Market Prediction Tools",
-    subtitle: "AI-powered insights",
-    action: "Try Free",
-    category: "investing",
+    title: "NYC → Lisbon Roundtrip – Google Flights",
+    subtitle: "Sample fall itinerary with 1 stop under $450.",
+    action: "View Flight",
+    category: "saving",
+    segment: "objects",
   },
   {
     id: 4,
-    title: "Cryptocurrency Trading Courses",
-    subtitle: "Beginner to advanced",
-    action: "Enroll Now",
+    title: "Crypto Trading Courses",
+    subtitle: "Beginner‑friendly paths before deploying capital",
+    action: "Browse Courses",
     category: "learning",
+    segment: "clusters",
   },
   {
     id: 5,
-    title: "Real Estate Investment Trusts",
-    subtitle: "Dividend yield 8%",
-    action: "View Details",
-    category: "investing",
+    title: "Costco Rotisserie Chicken – $4.99",
+    subtitle: "Classic budget dinner that still hasn’t gone up in price.",
+    action: "View Item",
+    category: "saving",
+    segment: "objects",
   },
   {
     id: 6,
-    title: "Freelance Writing Opportunities",
-    subtitle: "$50-$200 per article",
-    action: "Browse Jobs",
+    title: "Weekend Dog‑Sitting on Rover",
+    subtitle:
+      "3‑night golden retriever stay in your neighborhood, $120 payout.",
+    action: "View Gig",
     category: "earning",
+    segment: "objects",
   },
   {
     id: 7,
-    title: "Peer-to-Peer Lending Platforms",
-    subtitle: "Returns up to 12%",
-    action: "Get Started",
+    title: "Vanguard Total Stock Market ETF (VTI)",
+    subtitle: "Single fund owning 4,000+ U.S. companies with low fees.",
+    action: "View Fund",
     category: "investing",
+    segment: "objects",
   },
   {
     id: 8,
-    title: "Online MBA Programs",
-    subtitle: "Accredited & flexible",
-    action: "Request Info",
+    title: "Online MBA Programs for Operators",
+    subtitle: "Accredited, flexible and remote‑friendly options",
+    action: "View Programs",
     category: "learning",
+    segment: "clusters",
   },
   {
     id: 9,
-    title: "Forex Trading Signals",
-    subtitle: "Daily market analysis",
-    action: "Subscribe",
-    category: "investing",
+    title: "NBA Same‑Game Parlay – Lakers vs. Warriors",
+    subtitle: "Preset bet slip built from tonight’s most popular props.",
+    action: "Open Bet Slip",
+    category: "betting",
+    segment: "objects",
   },
   {
     id: 10,
-    title: "Side Hustle Ideas 2026",
-    subtitle: "Make $500+/month",
-    action: "Explore",
+    title: "side hustles that scale to $1k / month",
+    subtitle: "Idea clusters and playbooks by time & skill",
+    action: "Open cluster",
     category: "earning",
+    segment: "clusters",
   },
   {
     id: 11,
-    title: "Credit Card Rewards Programs",
-    subtitle: "Earn 2x points",
-    action: "Compare Cards",
+    title: "cashback & rewards cards bundle",
+    subtitle: "Optimized wallet for travel, points and perks",
+    action: "Compare bundle",
     category: "saving",
+    segment: "clusters",
   },
   {
     id: 12,
-    title: "Options Trading Strategies",
-    subtitle: "Risk management guide",
-    action: "Learn More",
+    title: "Options Hedging Basics",
+    subtitle: "Foundational courses, primers and tooling",
+    action: "Browse Resources",
     category: "investing",
+    segment: "clusters",
   },
   {
     id: 13,
-    title: "E-commerce Business Setup",
-    subtitle: "Start selling today",
-    action: "Get Started",
+    title: "starter ecommerce stack",
+    subtitle: "Storefront, payments, theme and email tools",
+    action: "View stack",
     category: "creating",
+    segment: "clusters",
   },
   {
     id: 14,
-    title: "Financial Planning Services",
-    subtitle: "Free consultation",
-    action: "Book Now",
-    category: "saving",
+    title: "Notion Second‑Brain Template",
+    subtitle: "Personal knowledge system for tasks, notes and reading.",
+    action: "Get Template",
+    category: "creating",
+    segment: "objects",
   },
   {
     id: 15,
-    title: "Passive Income Streams",
-    subtitle: "Build wealth slowly",
-    action: "Discover",
+    title: "passive income ideas for knowledge workers",
+    subtitle: "Kits, examples and playbooks",
+    action: "Open cluster",
     category: "earning",
+    segment: "clusters",
   },
   {
     id: 16,
-    title: "Investment Banking Internships",
-    subtitle: "Summer 2026",
-    action: "Apply",
+    title: "Investment Banking Summer Internships",
+    subtitle: "Roles grouped by geography and bank tier",
+    action: "View Openings",
     category: "earning",
+    segment: "clusters",
   },
   {
     id: 17,
-    title: "Sports Betting Analytics",
-    subtitle: "Data-driven picks",
-    action: "View Stats",
-    category: "betting",
+    title: "Airbnb Treehouse in Oregon Forest",
+    subtitle: "Two‑night stay with hot tub, fire pit and 4.9★ rating.",
+    action: "View Stay",
+    category: "shopping",
+    segment: "objects",
   },
   {
     id: 18,
-    title: "Online Certification Programs",
-    subtitle: "Boost your resume",
-    action: "Browse Courses",
+    title: "online certifications that move the needle",
+    subtitle: "Programs that signal skill & experience",
+    action: "Browse programs",
     category: "learning",
+    segment: "clusters",
   },
   {
     id: 19,
-    title: "Dividend Stock Portfolio",
-    subtitle: "Monthly income focus",
-    action: "View Picks",
+    title: "dividend portfolio ideas",
+    subtitle: "Baskets optimized for monthly income",
+    action: "View picks",
     category: "investing",
+    segment: "clusters",
   },
   {
     id: 20,
-    title: "Business Loan Options",
-    subtitle: "Low interest rates",
-    action: "Get Quote",
-    category: "saving",
+    title: "Nintendo Switch Cozy Games Bundle",
+    subtitle: "Animal Crossing, Stardew Valley and Spiritfarer in one pack.",
+    action: "View Bundle",
+    category: "shopping",
+    segment: "objects",
   },
   {
     id: 21,
-    title: "Creator Toolkits",
-    subtitle: "Templates, fonts, and assets",
-    action: "Browse",
+    title: "creator toolkits bundle",
+    subtitle: "Templates, fonts, assets and audiences",
+    action: "Browse bundle",
     category: "creating",
+    segment: "clusters",
   },
   {
     id: 22,
-    title: "Best Budget Meal Prep",
-    subtitle: "Save time & money weekly",
-    action: "See Recipes",
+    title: "Budget Meal Prep Ideas",
+    subtitle: "Cheap, healthy recipes and weekly plans",
+    action: "See Ideas",
     category: "shopping",
+    segment: "clusters",
   },
   {
     id: 23,
-    title: "Indie Game Bundles",
-    subtitle: "Top-rated games under $10",
-    action: "Shop Deals",
-    category: "shopping",
+    title: "Peloton App 30‑Day Free Trial",
+    subtitle: "On‑demand cycling, strength and yoga classes at home.",
+    action: "Start Trial",
+    category: "learning",
+    segment: "objects",
   },
   // {
   //   id: 24,
@@ -593,8 +632,8 @@ export default function Home() {
   const [selectedTab, setSelectedTab] = useState<
     "trending" | "suggested" | "popular"
   >("suggested");
-  const [selectedFeedCategory, setSelectedFeedCategory] =
-    useState<FeedCategory | null>(null);
+  const [selectedNewCategory, setSelectedNewCategory] =
+    useState<NewCategoryKey | null>(null);
   const [selectedAdIndex, setSelectedAdIndex] = useState(0);
   const [mainScrollOffset, setMainScrollOffset] = useState(0);
   const sliderInViewRef = useRef(false);
@@ -605,16 +644,74 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFloatingSuggestionsOpen, setIsFloatingSuggestionsOpen] =
     useState(false);
+  const [isExplorerOpen, setIsExplorerOpen] = useState(false);
+  const [selectedFeedSegment] = useState<FeedSegment>("all");
+  const [logoDividerHovered, setLogoDividerHovered] = useState(false);
+  const [logoDividerPulse, setLogoDividerPulse] = useState(false);
+  const [logoDividerPinned, setLogoDividerPinned] = useState(false);
+  const logoDividerRef = useRef<HTMLDivElement>(null);
+
+  /** collapsed = hyphen · soft = small box (hover/pulse) · pinned = large fixed overlay */
+  const logoDividerSoft =
+    !logoDividerPinned && (logoDividerHovered || logoDividerPulse);
+  const logoDividerPhase: "collapsed" | "soft" | "pinned" = logoDividerPinned
+    ? "pinned"
+    : logoDividerSoft
+      ? "soft"
+      : "collapsed";
 
   const visibleFeedItems = useMemo(() => {
-    if (!selectedFeedCategory) return feedItems;
-    return feedItems.filter((item) => item.category === selectedFeedCategory);
-  }, [selectedFeedCategory]);
+    let items = feedItems;
+    const feedCat =
+      selectedNewCategory != null
+        ? newCategoryFeedFilter[selectedNewCategory]
+        : undefined;
+    if (feedCat) {
+      items = items.filter((item) => item.category === feedCat);
+    }
+    if (selectedFeedSegment !== "all") {
+      items = items.filter((item) => item.segment === selectedFeedSegment);
+    }
+    return items;
+  }, [selectedNewCategory, selectedFeedSegment]);
 
   const activeSpace = useMemo(
     () => spaces[selectedAdIndex % spaces.length],
     [selectedAdIndex]
   );
+
+  useEffect(() => {
+    if (isAdLongHover || logoDividerPinned) return;
+    const expandDurationMs = 1600;
+    let pulseEndTimeout: number | null = null;
+    const tick = () => {
+      setLogoDividerPulse(true);
+      if (pulseEndTimeout !== null) window.clearTimeout(pulseEndTimeout);
+      pulseEndTimeout = window.setTimeout(() => {
+        setLogoDividerPulse(false);
+        pulseEndTimeout = null;
+      }, expandDurationMs);
+    };
+    const first = window.setTimeout(tick, 4500);
+    const id = window.setInterval(tick, 9000);
+    return () => {
+      window.clearInterval(id);
+      window.clearTimeout(first);
+      if (pulseEndTimeout !== null) window.clearTimeout(pulseEndTimeout);
+    };
+  }, [isAdLongHover, logoDividerPinned]);
+
+  useEffect(() => {
+    if (!logoDividerPinned) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      const node = logoDividerRef.current;
+      if (node && !node.contains(e.target as Node)) {
+        setLogoDividerPinned(false);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [logoDividerPinned]);
 
   // When the search query is non-empty, prevent or cancel the long-hover state
   useEffect(() => {
@@ -640,6 +737,17 @@ export default function Home() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isAdLongHover]);
+
+  useEffect(() => {
+    if (!logoDividerPinned) return;
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setLogoDividerPinned(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [logoDividerPinned]);
 
   // Auto-advance ad tab every 5 seconds
   useEffect(() => {
@@ -791,6 +899,43 @@ export default function Home() {
     };
   }, [isAdHovered, isAdLongHover]);
 
+  // Prevent main page scroll when interacting with the categories explorer;
+  // only the explorer itself should scroll.
+  useEffect(() => {
+    if (!isExplorerOpen) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement;
+      const explorer = target.closest(
+        "[data-categories-explorer-root]"
+      ) as HTMLElement | null;
+      if (!explorer) return;
+      e.preventDefault();
+      e.stopPropagation();
+      explorer.scrollTop += e.deltaY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const target = e.target as HTMLElement;
+      const explorer = target.closest(
+        "[data-categories-explorer-root]"
+      ) as HTMLElement | null;
+      if (!explorer) return;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    document.addEventListener("wheel", handleWheel, { passive: false });
+    document.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
+
+    return () => {
+      document.removeEventListener("wheel", handleWheel);
+      document.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, [isExplorerOpen]);
+
   // Prevent main scroll when scrolling inside suggestions list
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -868,10 +1013,10 @@ export default function Home() {
         onSelectAdIndex={setSelectedAdIndex}
       />
 
-      {/* Floating Main Search Bar (appears at bottom when main search leaves view) */}
+      {/* Floating Main Search Bar (appears at bottom when main search leaves view, or when explorer is open) */}
       <div
         className={`fixed bottom-[72px] left-1/2 z-[999] flex -translate-x-1/2 justify-center transition-all duration-300 ease-out ${
-          showCompactSearch
+          showCompactSearch || isExplorerOpen
             ? "pointer-events-auto translate-y-0 opacity-100"
             : "pointer-events-none translate-y-24 opacity-0"
         }`}
@@ -889,7 +1034,9 @@ export default function Home() {
               onChange={(e) => {
                 const value = e.target.value;
                 setSearchQuery(value);
-                setIsFloatingSuggestionsOpen(value.trim() !== "");
+                if (!isExplorerOpen) {
+                  setIsFloatingSuggestionsOpen(value.trim() !== "");
+                }
               }}
               className="h-full w-full flex-1 border-none bg-transparent px-2 text-center font-['Neue_Montreal'] text-[15px] font-normal text-black/100 opacity-0 outline-none transition-opacity duration-300 ease-out placeholder:text-black/30 focus:outline-none group-hover:opacity-100"
               style={{ boxShadow: "none" }}
@@ -902,13 +1049,17 @@ export default function Home() {
                 }
               }}
               onFocus={() => {
-                if (searchQuery.trim() !== "") {
+                if (!isExplorerOpen && searchQuery.trim() !== "") {
                   setIsFloatingSuggestionsOpen(true);
                 }
               }}
               onBlur={() => {
                 // Delay so click events on suggestions can fire
-                setTimeout(() => setIsFloatingSuggestionsOpen(false), 120);
+                setTimeout(() => {
+                  if (!isExplorerOpen) {
+                    setIsFloatingSuggestionsOpen(false);
+                  }
+                }, 120);
               }}
             />
             <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100">
@@ -919,7 +1070,7 @@ export default function Home() {
           {/* Suggestions List – opens upward from floating search */}
           <div
             className={`absolute bottom-full left-1/2 -mb-1 inline-flex w-[95%] max-w-[510px] -translate-x-1/2 flex-col items-center justify-start overflow-hidden rounded-b-[0px] rounded-t-[10px] bg-black/[0.5%] pb-1 pt-1 outline outline-[0.50px] outline-offset-[-0.25px] outline-black/10 backdrop-blur-[100px] transition-all duration-300 ease-out ${
-              isFloatingSuggestionsOpen
+              isFloatingSuggestionsOpen && !isExplorerOpen
                 ? "pointer-events-none max-h-[0px] min-h-[0px] pb-0 opacity-0 group-hover:pointer-events-auto group-hover:max-h-[280px] group-hover:min-h-[120px] group-hover:opacity-100 group-hover:shadow-[0px_20px_160px_-60px_rgba(0,0,0,0.1)]"
                 : "pointer-events-none max-h-[0px] min-h-[0px] pb-0 opacity-0"
             }`}
@@ -1029,133 +1180,186 @@ export default function Home() {
       </div>
 
       {/* Bottom Bar */}
-      <BottomBar />
+      <BottomBar
+        isExplorerOpen={isExplorerOpen}
+        onToggleExplorer={() => {
+          setIsExplorerOpen((prev) => {
+            const next = !prev;
+            if (next) {
+              // When opening the explorer, collapse any ad long-hover state
+              setIsAdLongHover(false);
+              setIsAdHovered(false);
+            }
+            return next;
+          });
+        }}
+      />
+
+      {/* Space name / query label (hidden while explorer is open) */}
+      {/* {!isExplorerOpen && (
+        <div className="absolute left-1/2 top-[44px] z-20 flex -translate-x-1/2 flex-col items-center justify-start gap-2.5">
+          <div
+            className="group inline-flex min-w-[180px] items-center justify-between gap-2 rounded-[10px] border-x-[0.50px] border-y-[0.50px] border-black/10 bg-black/[0.1%] px-1 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 ease-out"
+            onMouseEnter={() => {
+              setIsAdHovered(true);
+              if (!isAdLongHover && mainScrollOffset === 0) {
+                setIsAdLongHover(true);
+              }
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setIsAdLongHover(false);
+                setIsAdHovered(false);
+              }}
+              className={`flex h-5 w-5 items-center justify-center rounded-[6px] border-[0.5px] border-black/0 hover:bg-black/[2.5%] text-black/30 hover:text-black/40 transition-all duration-200 ${
+                isAdLongHover
+                  ? "opacity-100"
+                  : "opacity-0 group-hover:opacity-100"
+              }`}
+            >
+              <X className="h-3 w-3" />
+            </button>
+
+            <div className="mx-1 flex-1 text-center font-['Neue_Montreal'] text-[11px] font-normal text-black/55">
+              {searchQuery.trim() || activeSpace.name}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (!isAdLongHover && mainScrollOffset === 0) {
+                  setIsAdLongHover(true);
+                  setIsAdHovered(true);
+                }
+              }}
+              className={`flex h-5 w-5 items-center justify-center rounded-[6px] border-[0.5px] border-black/0 hover:bg-black/[2.5%] text-black/30 hover:text-black/40 transition-all duration-200  ${
+                isAdLongHover
+                  ? "opacity-100"
+                  : "opacity-0 group-hover:opacity-100"
+              }`}
+            >
+              <Maximize2 className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
+      )} */}
 
       {/* Main Container */}
       <div className="no-scrollbar relative flex flex-col items-center justify-center gap-0">
-        {/* Display Div */}
+        {/* Display Div / Explorer */}
         <div
           ref={sliderRef}
-          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-start gap-6 bg-black/0 pt-[60px]"
+          className="fixed top-0 z-0 flex h-screen w-full flex-col items-center justify-center gap-6 bg-black/0"
           // Another option is without: sticky top-0 mb-[7.5vh]
         >
-          {/* Ad Display */}
-          <div
-            data-ad-display-root
-            className={`duration-250 relative w-[82.5%] overflow-hidden rounded-none border-[0.50px] border-black/10 bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.0)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] ${
-              isVisible ? "h-[87.5%]" : "h-[45vh]"
-            } ${isAdHovered && isAdLongHover ? "w-[92.5%] bg-black/[0.35%]" : ""}`}
-            onMouseEnter={() => {
-              setIsAdHovered(true);
-              // Long-hover now activates immediately on hover instead of after 0.5s
-              // if (searchQuery.trim() === "" && mainScrollOffset === 0) {
-              //   setIsAdLongHover(true);
-              // }
-              // // Do not allow long-hover expansion when there is a query or the page is scrolled
-              // if (searchQuery.trim() !== "" || mainScrollOffset > 0) {
-              //   return;
-              // }
-              // if (adHoverTimeoutRef.current !== null) {
-              //   window.clearTimeout(adHoverTimeoutRef.current);
-              // }
-              // adHoverTimeoutRef.current = window.setTimeout(() => {
-              //   setIsAdLongHover(true);
-              // }, 500);
-            }}
-            onMouseLeave={() => {
-              setIsAdHovered(false);
-              setIsAdLongHover(false);
-              // if (adHoverTimeoutRef.current !== null) {
-              //   window.clearTimeout(adHoverTimeoutRef.current);
-              //   adHoverTimeoutRef.current = null;
-              // }
-              // setIsAdLongHover(false);
-            }}
-          >
-            {/* Space name / query label */}
-            <div className="absolute left-1/2 top-3 z-20 flex -translate-x-1/2 flex-col items-center justify-start gap-2.5">
+          {isExplorerOpen ? (
+            <CategoriesExplorerView filterQuery={searchQuery} />
+          ) : (
+            /* Ad Display */
+            <div
+              data-ad-display-root
+              className={`duration-250 relative mb-[54px] overflow-hidden rounded-none border-[0.50px] bg-white/5 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.0)] backdrop-blur-[50px] transition-all ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                isVisible ? "" : "h-[45vh]"
+              } ${
+                isAdHovered && isAdLongHover
+                  ? "h-[80%] w-[92.5%] border-black/10 bg-black/[0.35%]"
+                  : "h-[100vh] w-[100%] border-black/0"
+              }`}
+              onMouseEnter={() => {
+                setIsAdHovered(true);
+              }}
+              onMouseLeave={() => {
+                setIsAdHovered(false);
+                setIsAdLongHover(false);
+              }}
+            >
+              {/* Free‑form space canvas */}
               <div
-                className="inline-flex min-w-[220px] items-center justify-center gap-2 rounded-[10px] border-x-[0.50px] border-y-[0.50px] border-black/10 bg-black/[0.1%] px-4 py-1 shadow-[0px_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-xl"
-                onMouseEnter={() => {
-                  setIsAdHovered(true);
-                  if (searchQuery.trim() === "" && mainScrollOffset === 0) {
-                    setIsAdLongHover(true);
-                  }
-                }}
-                // onMouseLeave={() => {
-                //   setIsAdHovered(false);
-                //   setIsAdLongHover(false);
-                // }}
-              >
-                <div className="font-['Neue_Montreal'] text-[11px] font-normal text-black/35">
-                  {searchQuery.trim() || activeSpace.name}
-                </div>
-              </div>
-
-              <div
-                onClick={() => setIsAdLongHover(false)}
-                role="button"
-                className={`font-['Neue_Montreal'] text-[11px] font-normal text-black/25 transition-opacity duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                  isAdLongHover
-                    ? "pointer-events-auto cursor-pointer opacity-100"
-                    : "pointer-events-none opacity-0"
+                className={`relative flex h-full w-full items-center justify-center px-10 pb-10 pt-14 transition-opacity duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                  isAdLongHover ? "opacity-100" : "opacity-0"
                 }`}
               >
-                Collapse (Esc)
-              </div>
-            </div>
+                <div className="relative h-full w-full max-w-[640px]">
+                  {activeSpace.widgets.map((widget) => (
+                    <div
+                      key={widget.id}
+                      className="group absolute flex w-[180px] cursor-pointer flex-col gap-0 rounded-[2px] border-[0.50px] border-black/10 shadow-[0px_4px_35px_-20px_rgba(0,0,0,0.0)] backdrop-blur-xl transition-transform duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] hover:bg-black/[1%]"
+                      style={{ top: widget.top, left: widget.left }}
+                    >
+                      {/* Image placeholder */}
+                      <div className="h-28 w-full bg-black/[0.0]" />
 
-            {/* Free‑form space canvas */}
-            <div
-              className={`relative flex h-full w-full items-center justify-center px-10 pb-10 pt-14 transition-opacity duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                isAdLongHover ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <div className="relative h-full w-full max-w-[640px]">
-                {activeSpace.widgets.map((widget) => (
-                  <div
-                    key={widget.id}
-                    className="group absolute flex w-[180px] cursor-pointer flex-col gap-0 rounded-[2px] border-[0.50px] border-black/10 shadow-[0px_4px_35px_-20px_rgba(0,0,0,0.0)] backdrop-blur-xl transition-transform duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] hover:bg-black/[1%]"
-                    style={{ top: widget.top, left: widget.left }}
-                  >
-                    {/* Image placeholder */}
-                    <div className="h-28 w-full bg-black/[0.0]" />
+                      <div className="absolute bottom-0 left-0 flex h-0 w-full items-center justify-center -space-y-0.5 border-t-[0.50px] border-black/[0.05] bg-white/5 px-2.5 py-1.5 opacity-0 transition-opacity duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:h-auto group-hover:opacity-100">
+                        <div className="font-['Neue_Montreal'] text-[11px] font-normal leading-snug text-black/55">
+                          {widget.subtitle}
+                        </div>
+                      </div>
 
-                    <div className="absolute bottom-0 left-0 flex h-0 w-full items-center justify-center -space-y-0.5 border-t-[0.50px] border-black/[0.05] bg-white/5 px-2.5 py-1.5 opacity-0 transition-opacity duration-200 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:h-auto group-hover:opacity-100">
-                      {/* <div className="font-['Neue_Montreal'] text-[12px] font-medium text-black/85">
-                        {widget.title}
-                      </div> */}
-                      <div className="font-['Neue_Montreal'] text-[11px] font-normal leading-snug text-black/55">
-                        {widget.subtitle}
+                      <div className="absolute -bottom-[28px] left-1/2 flex -translate-x-1/2 items-start justify-center gap-0.5 rounded-md bg-black/0 px-1.5 py-[2px]">
+                        <div className="font-['Neue_Montreal'] text-[11px] text-black/40">
+                          {widget.title}
+                        </div>
                       </div>
                     </div>
-
-                    <div className="absolute -bottom-[28px] left-1/2 flex -translate-x-1/2 items-start justify-center gap-0.5 rounded-md bg-black/0 px-1.5 py-[2px]">
-                      <div className="font-['Neue_Montreal'] text-[11px] text-black/40">
-                        {widget.title}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Logo */}
-          {/* <div
-            className={`duration-250 absolute left-1/2 top-[22.5vh] lg:top-[27.5vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-5xl font-normal text-black transition-opacity ease-[cubic-bezier(0.19,1,0.22,1)] ${
-              isAdLongHover ? "opacity-0 hidden" : "opacity-100"
+          <div
+            className={`duration-250 absolute left-1/2 top-[22.5vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-5xl font-normal leading-none text-black transition-opacity ease-[cubic-bezier(0.19,1,0.22,1)] lg:top-[26.5vh] ${
+              isAdLongHover ? "hidden opacity-0" : "opacity-100"
             }`}
           >
-            WEB&nbsp;&nbsp;&nbsp;–––&nbsp;&nbsp;&nbsp;MKT
-          </div> */}
+            <div className="inline-flex items-center justify-center gap-6">
+              <span className="select-none tracking-tight">WEB</span>
+              <div className="relative flex h-12 w-20 shrink-0 items-center justify-center">
+                <div
+                  ref={logoDividerRef}
+                  role="presentation"
+                  aria-hidden
+                  onMouseEnter={() => setLogoDividerHovered(true)}
+                  onMouseLeave={() => setLogoDividerHovered(false)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (logoDividerPinned) return;
+                    setLogoDividerPinned(true);
+                    setLogoDividerHovered(false);
+                    setLogoDividerPulse(false);
+                  }}
+                  className={`shrink-0 cursor-pointer ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                    logoDividerPhase === "pinned"
+                      ? "fixed left-1/2 top-1/2 z-[1100] h-[min(48vh,420px)] w-[min(80vw,1200px)] -translate-x-1/2 -translate-y-1/3 rounded-sm border-[3px] border-white bg-zinc-100 shadow-[0px_4px_30px_-6px_rgba(0,0,0,0.07)] transition-[width,height,box-shadow,background-color,border-width,border-color,border-radius] duration-500"
+                      : logoDividerPhase === "soft"
+                        ? "absolute left-1/2 top-1/2 z-[1] h-12 w-20 -translate-x-1/2 -translate-y-1/2 rounded-[2px] border-[3px] border-white bg-zinc-100 shadow-[0px_4px_30px_-6px_rgba(0,0,0,0.07)] transition-[width,height,box-shadow,background-color,border-width,border-color,border-radius] duration-500"
+                        : "absolute left-1/2 top-1/2 z-[1] h-[4.5px] w-[60px] -translate-x-1/2 -translate-y-1/2 rounded-none border-0 bg-black shadow-none transition-[width,height,box-shadow,background-color,border-width,border-color,border-radius] duration-500"
+                  }`}
+                >
+                  {logoDividerPinned && (
+                    <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
+                      <div className="inline-flex w-40 flex-col items-center justify-center rounded-bl-xl rounded-br-xl border-b-[0.50px] border-l-[0.50px] border-r-[0.50px] border-black/10 px-2.5 py-2">
+                        <div className="justify-start text-center font-['Neue_Montreal'] text-[10px] font-medium text-black/40">
+                          WEB&nbsp;&nbsp;–––&nbsp;&nbsp;MKT
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <span className="select-none tracking-tight">MKT</span>
+            </div>
+          </div>
         </div>
 
         {/* Scrolling Div */}
         {/* mt controls offset from the ad display; it expands when hovering the ad space */}
         <div
           className={`relative z-10 flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/10 bg-[#F6F6F6] pt-[60vh] shadow-[0px_-20px_120px_-60px_rgba(0,0,0,0.05)] transition-[margin-top] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-            isAdLongHover ? "mt-[100vh]" : "mt-[40vh]"
+            isAdLongHover || isExplorerOpen ? "mt-[100vh]" : "mt-[40vh]"
           }`}
         >
           {/* Search Container */}
@@ -1164,7 +1368,7 @@ export default function Home() {
               {/* Main Search Bar */}
               <div
                 ref={mainSearchRef}
-                className="relative z-20 inline-flex h-11 w-[55vw] max-w-[640px] items-center justify-between overflow-hidden rounded-[5px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.05)]"
+                className="relative z-20 inline-flex h-11 w-[55vw] min-w-[380px] max-w-[640px] items-center justify-between overflow-hidden rounded-[16px] bg-white px-2 py-1 shadow-[0px_2px_20px_-8px_rgba(0,0,0,0.05)]"
               >
                 <div className="flex h-7 w-7 items-center justify-center gap-2 rounded-2xl">
                   <Plus className="h-5 stroke-black/40" />
@@ -1330,7 +1534,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => goToSearch(searchQuery || "I'm Feeling Lucky")}
-              className="z-20 mt-8 inline-flex h-7 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-md border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[1.5%]"
+              className="z-20 mt-7 inline-flex h-8 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-xl border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[1.5%]"
             >
               <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/80">
                 I&apos;m Feeling Lucky
@@ -1340,6 +1544,7 @@ export default function Home() {
 
           {/* Categories */}
           {/* -mt-[112px] is to compensate for the bottom bar height */}
+          {/*
           <div className="inline-flex w-full flex-col items-center justify-center gap-2.5 border-b-[0.5px] border-black/10 px-3.5 py-3.5 opacity-100 lg:-mt-[112px]">
             <div className="inline-flex w-full max-w-[60%] items-center justify-center gap-3.5">
               {feedCategoryTabs.map((tab) => {
@@ -1367,11 +1572,84 @@ export default function Home() {
               })}
             </div>
           </div>
+          */}
+
+          {/* New Category List */}
+          <div className="flex w-full min-w-0 items-center justify-center overflow-y-hidden border-b-[0.50px] border-black/10 lg:-mt-[160px]">
+            <div className="no-scrollbar flex w-auto max-w-full flex-nowrap items-center justify-center gap-[3px] self-stretch overflow-x-auto rounded-t-[14px] border-[0.50px] border-b-[0px] border-black/10 bg-black/0 px-2 py-2 shadow-[inset_0px_-2px_14px_-4px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+              {newCategoryList.map((row) => {
+                const isSelected = selectedNewCategory === row.key;
+                return (
+                  <div
+                    key={row.key}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() =>
+                      setSelectedNewCategory(isSelected ? null : row.key)
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedNewCategory(isSelected ? null : row.key);
+                      }
+                    }}
+                    className={`inline-flex w-[88px] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 rounded-xl py-3.5 outline outline-[0.50px] outline-offset-[-0.50px] transition-colors ${
+                      isSelected
+                        ? "bg-white/40 outline-black/15"
+                        : "outline-black/0 hover:bg-black/[1%]"
+                    }`}
+                  >
+                    <div
+                      className={`h-9 w-9 rounded-[100px] bg-black/5 p-2 shadow-[0px_2px_10px_0px_rgba(0,0,0,0.05)] backdrop-blur-lg ${
+                        row.iconStyle === "border"
+                          ? "border-[2.50px] border-white"
+                          : "flex flex-col items-center justify-center gap-2 outline outline-[2.50px] outline-offset-[-2.50px] outline-white"
+                      }`}
+                    />
+                    <div
+                      className={`line-clamp-1 justify-start text-center font-['Neue_Montreal'] text-xs font-normal ${
+                        isSelected ? "text-black/50" : "text-black/25"
+                      }`}
+                    >
+                      {row.label}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Feed Container */}
           <div className="relative flex w-full flex-col items-center justify-start overflow-hidden">
+            {/* Segmented Feed Tabs */}
+            {/* <div className="absolute top-[1.75vw] z-20 flex w-auto justify-center">
+              <div className="w-full inline-flex items-center justify-center p-1 gap-0 rounded-full border-[0.5px] border-black/10 bg-white/0 shadow-[0px_8px_30px_-18px_rgba(0,0,0,0.0)] backdrop-blur-[0px]">
+              {([
+                { key: "all" as FeedSegment, label: "All" },
+                { key: "objects" as FeedSegment, label: "Objects" },
+                { key: "clusters" as FeedSegment, label: "Clusters" },
+              ] as const).map((segment) => {
+                  const isActive = selectedFeedSegment === segment.key;
+                  return (
+                    <button
+                      key={segment.key}
+                      type="button"
+                      onClick={() => setSelectedFeedSegment(segment.key)}
+                      className={`w-[75px] flex items-center justify-center rounded-full px-3 py-0.5 text-[13px] font-normal font-['Neue_Montreal'] transition-colors duration-150 ${
+                        isActive
+                          ? "bg-white/100 text-black shadow-[0px_2px_12px_-4px_rgba(0,0,0,0.03)]"
+                          : "text-black/35 hover:bg-black/[2%]"
+                      }`}
+                    >
+                      {segment.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div> */}
+
             {/* Feed Items */}
-            <div className="feed-border-vertical inline-flex min-h-[87.5vh] w-2/3 flex-wrap content-start items-start justify-center gap-[40px] px-[5vw] pb-[35vh] pt-[7.5vw]">
+            <div className="feed-border-vertical inline-flex min-h-[87.5vh] w-full flex-wrap content-start items-start justify-center gap-[40px] px-10 pb-[20vh] pt-10 sm:w-[70%] sm:px-[5vw] sm:pb-[30vh] sm:pt-[7.5vw]">
               {visibleFeedItems.map((item) => (
                 <ExpandedFeedItemCard
                   key={item.id}
