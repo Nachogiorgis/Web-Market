@@ -1311,7 +1311,7 @@ export default function Home() {
 
           {/* Logo */}
           <div
-            className={`duration-250 absolute left-1/2 top-[22.5vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-5xl font-normal leading-none text-black transition-opacity ease-[cubic-bezier(0.19,1,0.22,1)] lg:top-[26.5vh] ${
+            className={`duration-250 absolute left-1/2 top-[22.5vh] -translate-x-1/2 justify-start text-center font-['Neue_Montreal'] text-5xl font-normal leading-none text-black transition-opacity ease-[cubic-bezier(0.19,1,0.22,1)] lg:top-[27.5vh] ${
               isAdLongHover ? "hidden opacity-0" : "opacity-100"
             }`}
           >
@@ -1358,9 +1358,11 @@ export default function Home() {
         {/* Scrolling Div */}
         {/* mt controls offset from the ad display; it expands when hovering the ad space */}
         <div
-          className={`relative z-10 flex w-full flex-col items-center justify-start border-t-[0.50px] border-black/10 bg-[#F6F6F6] pt-[60vh] shadow-[0px_-20px_120px_-60px_rgba(0,0,0,0.05)] transition-[margin-top] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-            isAdLongHover || isExplorerOpen ? "mt-[100vh]" : "mt-[40vh]"
-          }`}
+          className={`relative z-10 flex w-full flex-col items-center justify-start border-t-[0.50px] bg-[#F6F6F6] pt-[60vh] transition-[margin-top,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+            logoDividerPinned
+              ? "border-black/10 shadow-[0px_-20px_120px_-60px_rgba(0,0,0,0.05)]"
+              : "border-black/0 shadow-[0px_-20px_120px_-60px_rgba(0,0,0,0)]"
+          } ${isAdLongHover || isExplorerOpen ? "mt-[100vh]" : "mt-[40vh]"}`}
         >
           {/* Search Container */}
           <div className="absolute -top-6 z-20 flex flex-col items-center justify-start gap-8">
@@ -1534,7 +1536,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => goToSearch(searchQuery || "I'm Feeling Lucky")}
-              className="z-20 mt-7 inline-flex h-8 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-xl border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[1.5%]"
+              className="z-20 mt-9 inline-flex h-8 w-44 cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-xl border-[0.50px] border-black/10 bg-black/[0%] px-3 py-2 backdrop-blur-xl transition-all duration-100 hover:bg-black/[1.5%]"
             >
               <div className="justify-start text-center font-['Neue_Montreal'] text-xs font-medium text-black/80">
                 I&apos;m Feeling Lucky
